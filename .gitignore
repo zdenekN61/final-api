@@ -1,0 +1,4 @@
+/log/*log
+/config/travis.yml
+/config/database.yml
+/vendor/ddtf

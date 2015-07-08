@@ -1,0 +1,41 @@
+
+production:
+  sentry_dsn: http://example.com/...
+
+  database:
+    host: localhost
+    database: travis_production
+    username: <%= ENV['USER'] %>
+  amqp:
+    host: localhost
+    port: 5672
+    username: travisci_worker
+    password: travisci_worker_password
+    vhost: travisci.development
+
+
+development:
+  database:
+    host: localhost
+    database: travis_development
+    username: <%= ENV['USER'] %>
+  amqp:
+    host: localhost
+    port: 5672
+    username: travisci_worker
+    password: travisci_worker_password
+    vhost: travisci.development
+
+test:
+  database:
+    host: localhost
+    database: travis_test
+    username: <%= ENV['USER'] %>
+  amqp:
+    host: localhost
+    port: 5672
+    username: travisci_worker
+    password: travisci_worker_password
+    vhost: travisci.development
+
+

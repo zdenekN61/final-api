@@ -1,0 +1,8 @@
+MIT license see LICENSE.*
+It is used some code part (e.g. Rackfile) from github.com/travis-ci/travis-hub 
+and herefore Travis CI license is included.
+
+The http builder is based from github.com/travis-ci/travis-core:
+* https://github.com/travis-ci/travis-core/blob/master/lib/travis/api/v1/http.rb
+* https://github.com/travis-ci/travis-core/tree/master/lib/travis/api/v1/http
+therefore travis-core license is included.
