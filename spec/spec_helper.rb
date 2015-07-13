@@ -6,6 +6,7 @@ require 'factories'
 
 ENV['ENV'] = ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 
+FinalAPI.setup
 FinalAPI.logger = Logger.new(StringIO.new)
 
 

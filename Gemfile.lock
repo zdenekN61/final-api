@@ -1,6 +1,26 @@
 GIT
-  remote: git://github.com/final-ci/travis-core.git
-  revision: e4f1699c5c766779ba4b456f7981380cec4ecba9
+  remote: git://github.com/final-ci/travis-sidekiqs.git
+  revision: c9e918e62c9272578b458f954dab30344a8ae091
+  specs:
+    travis-sidekiqs (0.0.1)
+      sidekiq
+
+GIT
+  remote: git://github.com/final-ci/travis-support.git
+  revision: 6ed312e112452497dc22ab73561f134ffaaa9f77
+  specs:
+    travis-support (0.0.1)
+
+GIT
+  remote: git://github.com/utgarda/sidekiq-status.git
+  revision: e77d5dc2ea0a249ccbbafead21ece59d6b8caf73
+  ref: e77d5dc2ea0a249ccbbafead21ece59d6b8caf73
+  specs:
+    sidekiq-status (0.5.3)
+      sidekiq (>= 2.7)
+
+PATH
+  remote: ../travis-core
   specs:
     travis-core (0.0.1)
       actionmailer (~> 3.2.19)
@@ -21,19 +41,6 @@ GIT
       thor (~> 0.14.6)
       travis-config (~> 0.1.0)
       virtus (~> 1.0.0)
-
-GIT
-  remote: git://github.com/final-ci/travis-sidekiqs.git
-  revision: c9e918e62c9272578b458f954dab30344a8ae091
-  specs:
-    travis-sidekiqs (0.0.1)
-      sidekiq
-
-GIT
-  remote: git://github.com/final-ci/travis-support.git
-  revision: 6ed312e112452497dc22ab73561f134ffaaa9f77
-  specs:
-    travis-support (0.0.1)
 
 GEM
   remote: https://rubygems.org/
@@ -237,6 +244,7 @@ DEPENDENCIES
   rspec
   sentry-raven
   shoulda-matchers
+  sidekiq-status!
   sinatra (~> 1.4.6)
   sinatra-contrib (~> 1.4.4)
   stash-client

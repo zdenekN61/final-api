@@ -10,6 +10,9 @@ module FinalAPI
       require 'final-api/v1/http/repositories'
       require 'final-api/v1/http/repository'
       require 'final-api/v1/http/user'
+
+      require 'final-api/v1/http/requests'
+      require 'final-api/v1/http/request'
     end
   end
 end

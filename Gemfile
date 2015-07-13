@@ -1,13 +1,16 @@
 # A sample Gemfile
 source "https://rubygems.org"
 
-gem 'travis-core',        github: 'final-ci/travis-core'
+#gem 'travis-core',        github: 'final-ci/travis-core'
+gem 'travis-core',        path: '../travis-core'
 gem 'travis-config',      '~> 0.1.0'
 gem 'travis-support',     github: 'final-ci/travis-support'
 gem 'pg'
 
 gem 'micro_migrations'
 gem 'travis-sidekiqs',    github: 'final-ci/travis-sidekiqs', require: nil
+gem 'sidekiq-status',     github: 'utgarda/sidekiq-status', ref: 'e77d5dc2ea0a249ccbbafead21ece59d6b8caf73'
+
 
 gem 'connection_pool'
 
