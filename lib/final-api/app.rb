@@ -22,6 +22,7 @@ module FinalAPI
     register FinalAPI::Cors
 
     before do
+      auth
       content_type 'application/json'
     end
 
@@ -81,9 +82,25 @@ module FinalAPI
 
     private
 
+      def auth
+        @user_name = env['HTTP_USERNAME']
+        @authenticationToken = env['HTTP_AUTHENTICATIONTOKEN']
+
+        if @user_name.blank? or @authenticationToken.blank?
+          halt 401, {:result => 'error', :message => "Invalid user credentials"}.to_json
+        end
+
+        @current_user = User.find_by_login(@user_name)
+        unless @current_user
+          #FIXME: currently only for debugging, should be same message as above
+          halt 401, {:result => 'error', :message => "Unknown user"}.to_json
+        end
+      end
+
+
       def current_user
-        @userName = env['HTTP_USERNAME']
-        @current_user ||= User.find_by_name(@userName)
+        @current_user ||= User.find_by_login(@user_name)
+        @current_user
       end
 
       def save_and_respond(object)
