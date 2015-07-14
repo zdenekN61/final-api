@@ -15,8 +15,10 @@ production:
 
 
 development:
+  log_level: :debug
+  origin_whitelist: '*'
+  allowed_origin: '*'
   database:
-    host: localhost
     database: travis_development
     username: <%= ENV['USER'] %>
   amqp:
