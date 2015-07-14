@@ -7,9 +7,11 @@ describe 'Requests' do
     FinalAPI::App
   end
 
+  let!(:user) { Factory(:user) }
+
   let(:headers) { {
     'HTTP_ACCEPT' => 'application/json',
-    'HTTP_USERNAME' => 'franta.lopata',
+    'HTTP_USERNAME' => user.login,
     'HTTP_AUTHENTICATIONTOKEN' => 'secret'
   } }
 
