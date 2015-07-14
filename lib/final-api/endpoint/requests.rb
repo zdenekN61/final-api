@@ -21,10 +21,14 @@ module FinalAPI::Endpoint
       end
 
       app.post '/requests' do
+        provider = params['provider'] || 'github'
         payload = params.dup.update(owner_name: current_user.name)
+        Travis.logger.debug "Scheduling BuildRequest with " +
+          "provider: #{provider}, payload: #{payload.inspect}"
         jid = Travis::Sidekiq::BuildRequest.perform_async(
           type: 'api',
-          payload: payload,
+          payload: MultiJson.encode(payload),
+          provider: provider,
           credentials: {}
         )
         { jid: jid }.to_json

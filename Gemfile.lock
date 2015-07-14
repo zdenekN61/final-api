@@ -252,6 +252,3 @@ DEPENDENCIES
   travis-core!
   travis-sidekiqs!
   travis-support!
-
-BUNDLED WITH
-   1.10.5
