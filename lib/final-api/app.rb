@@ -29,6 +29,7 @@ module FinalAPI
     ## Endpoints
 
     register FinalAPI::Endpoint::Requests
+    register FinalAPI::Endpoint::Builds
 
     ## Builds
 

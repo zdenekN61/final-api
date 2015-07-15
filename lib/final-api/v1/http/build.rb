@@ -2,7 +2,6 @@ module FinalAPI
   module V1
     module Http
       class Build
-        require 'final-api/v1/http/build/job'
 
         include ::Travis::Api::Formats, ::Travis::Api::V1::Helpers::Legacy
 
@@ -18,7 +17,7 @@ module FinalAPI
           {
             'id' => build.id,
             'repository_id' => build.repository_id,
-            'number' => build.number,
+            'number' => build.number.to_s,
             'config' => build.obfuscated_config.stringify_keys,
             'state' => legacy_build_state(build),
             'result' => legacy_build_result(build),

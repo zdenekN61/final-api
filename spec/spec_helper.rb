@@ -1,10 +1,11 @@
+ENV['ENV'] = ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
+
 require 'factory_girl'
 require 'database_cleaner'
 require 'final-api'
 require 'rack/test'
 require 'factories'
 
-ENV['ENV'] = ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 
 FinalAPI.setup
 FinalAPI.logger = Logger.new(StringIO.new)
@@ -32,15 +33,19 @@ FinalAPI.logger = Logger.new(StringIO.new)
 DatabaseCleaner.strategy = :truncation
 
 RSpec.configure do |config|
-  # config.include FactoryGirl::Syntax::Methods
+
   config.before(:suite) do
-    begin
-      DatabaseCleaner.start
-      # FactoryGirl.lint
-    ensure
-      DatabaseCleaner.clean
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
     end
   end
+
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

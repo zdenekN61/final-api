@@ -2,7 +2,10 @@
   "owner_name": "FIN",
   ".travis.yml": {
     "language": "bash",
-    "script": "echo 'skript jede XXXX pres stash-api'; sleep 10; echo 'Ahoj!'"
+    "script": "echo 'skript jede XXXX pres stash-api'; sleep 120; echo 'Ahoj!'",
+    "git": {
+      "no_clone": true
+    }
   },
 
 

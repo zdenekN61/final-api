@@ -23,7 +23,6 @@ module FinalAPI
             'status' => legacy_job_result(job),
             'started_at' => format_date(job.started_at),
             'finished_at' => format_date(job.finished_at),
-            'log' => job.log_content,
             'commit' => commit.commit,
             'branch' => commit.branch,
             'message' => commit.message,

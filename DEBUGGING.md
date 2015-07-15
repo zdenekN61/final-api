@@ -63,3 +63,10 @@ Where `stash-payload.json` contains:
        }
      }
 
+
+     curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' --header "Content-Type: application/json"  -X POST -d @stash-payload.json  http://localhost:9292/requests
+     curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' --header "Content-Type: application/json" http://localhost:9292/requests/0c28adfdb82d172b812a9320
+     curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' --header "Content-Type: application/json" http://localhost:9292/builds/1350
+     curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' --header "Content-Type: application/json" -X post -d '' http://localhost:9292/builds/1350/cancel
+     curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' --header "Content-Type: application/json" -X post -d '' http://localhost:9292/builds/1350/restart
+

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'final-api/app'
 
 describe 'Requests' do
   include Rack::Test::Methods

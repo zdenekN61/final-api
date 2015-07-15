@@ -11,20 +11,15 @@ module FinalAPI
         end
 
         def data
-          jobs.map { |job| job_data(job) }
+          jobs.map { |job| Job.new(job).data }
         end
 
-        def job_data(job)
-          commit = job.commit
-          {
-            'id' => job.id,
-            'repository_id' => job.repository_id,
-            'number' => job.number,
-            'state' => legacy_job_state(job),
-            'queue' => job.queue,
-            'allow_failure' => job.allow_failure
-          }
-        end
+        #    'id'
+        #    'repository_id'
+        #    'number'
+        #    'state'
+        #    'queue'
+        #    'allow_failure'
       end
     end
   end
