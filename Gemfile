@@ -24,13 +24,16 @@ gem 'sinatra-contrib', '~> 1.4.4'
 gem 'sentry-raven'#,    github: 'getsentry/raven-ruby'
 gem 'metriks'
 
+gem 'bunny'
+
+gem 'metriks-librato_metrics'
+
 
 group :test do
   gem 'rspec'
-  gem 'shoulda-matchers'
-  gem 'json-schema'
   gem 'factory_girl',     '~> 2.6.0'
   gem 'database_cleaner', '~> 1.4.1'
+  gem "fakefs",           require: nil
 end
 
 gem 'stash-client'

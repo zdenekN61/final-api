@@ -13,6 +13,9 @@ module FinalAPI
 
       require 'final-api/v1/http/requests'
       require 'final-api/v1/http/request'
+
+      require 'final-api/v1/http/log'
+      require 'final-api/v1/http/log_parts'
     end
   end
 end

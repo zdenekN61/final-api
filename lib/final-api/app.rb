@@ -30,6 +30,7 @@ module FinalAPI
 
     register FinalAPI::Endpoint::Requests
     register FinalAPI::Endpoint::Builds
+    register FinalAPI::Endpoint::Jobs
 
     ## Builds
 

@@ -25,22 +25,18 @@ module FinalAPI::Endpoint
         FinalAPI::Builder.new(result).data.to_json
       end
 
-      app.post 'builds/:id/cancel' do
-        service = self.service(:cancel_build, params.merge(source: 'api'))
-        halt(403, { message: "Not auth" }.to_json) unless service.authorized?
-        halt(422, { message: "Cannot cancel build id: #{params[:id]}" }.to_json) unless service.can_cancel?
-        Travis::Sidekiq::BuildCancellation.perform_async(
-          id: params[:id],
-          user_id: current_user.id,
-          source: 'api'
-        )
+      app.post '/builds/:id/cancel' do
+        service = Travis.service(:cancel_build, current_user, params.merge(source: 'api'))
+        halt(403, { messages: service.messages }.to_json) unless service.authorized?
+        halt(422, { messages: service.messages }.to_json) unless service.can_cancel?
+        Travis.run_service(:cancel_build, current_user, { id: params['id'], source: 'api' })
         halt 202
       end
 
-      app.post 'builds/:id/restart' do
-        service = self.service(:reset_model, build_id: params[:id])
-        halt(403, { message: "Not accepted" }.to_json) unless service.accept?
-        Travis::Sidekiq::BuildRestart.perform_async(id: params[:id], user_id: current_user.id)
+      app.post '/builds/:id/restart' do
+        service = Travis.service(:reset_model, current_user, build_id: params[:id])
+        halt(403, { messages: service.messages }.to_json) unless service.accept?
+        Travis.run_service(:reset_model, current_user, build_id: params['id'])
         halt 202
       end
 

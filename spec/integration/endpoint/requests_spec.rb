@@ -23,7 +23,7 @@ describe 'Requests' do
     let!(:request1) { Factory(:request) }
     let!(:request2) { Factory(:request, repository: Factory(:repository)) }
 
-    it '/requests' do
+    it 'GET /requests' do
       repository = request1.repository
       response = get '/requests', { repository_id: repository.id}, headers
       expect(response.status).to eq 200
@@ -44,7 +44,7 @@ describe 'Requests' do
   end
 
 
-  context "/requests/:id_or_jid" do
+  context "GET /requests/:id_or_jid" do
     let!(:request) { Factory(:request, jid: SecureRandom.hex(12)) }
 
     context "when id not exits" do
@@ -71,6 +71,42 @@ describe 'Requests' do
     end
   end
 
+  context "POST /requests" do
+    let(:payload) { {
+       ".travis.yml"=> {
+         "language"=>"bash",
+         "script"=>"echo 'well done!'",
+         "git"=>{"no_clone"=>true}},
+       "provider"=>"stash",
+       "repository"=> {
+         "slug"=>"test-repo",
+         "name"=>"test-repo",
+         "project"=>
+          {"key"=>"FIN",
+           "name"=>"FINAL-CI",
+           "description"=>"Test framework based on travis-ci",
+           "public"=>true,
+           "type"=>"NORMAL"},
+         "public"=>true
+        },
+       "refChange"=> {
+         "refId"=>"refs/heads/master",
+         "fromHash"=>"26889fb199985390da9c668d1399702940c44132",
+         "toHash"=>"08328b76d12e956d96e5e87c1fd7cf34265828ef",
+         "type"=>"UPDATE"
+       }
+    } }
+    #FIXME
+    #it "schedule a request" do
+    #  scheuled_params = {
+    #    type: 'api',
+    #    payload: MultiJson.encode(payload.update(owner_name: user.name)),
+    #    credentials: {}
+    #  }
+    #  expect(Travis::Sidekiq::BuildRequest).to receive(:perform_async).with(scheuled_params)
+    #  result = post "/requests", payload, headers
+    #end
+  end
 
 
 end

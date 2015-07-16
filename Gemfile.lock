@@ -70,6 +70,7 @@ GEM
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
     addressable (2.3.8)
+    amq-protocol (1.9.2)
     arel (3.0.3)
     atomic (1.1.99)
     avl_tree (1.2.1)
@@ -80,6 +81,8 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     backports (3.6.5)
     builder (3.0.4)
+    bunny (1.7.0)
+      amq-protocol (>= 1.9.2)
     celluloid (0.16.0)
       timers (~> 4.0.0)
     coder (0.4.0)
@@ -97,6 +100,7 @@ GEM
     erubis (2.7.0)
     factory_girl (2.6.4)
       activesupport (>= 2.3.9)
+    fakefs (0.6.7)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     gh (0.14.0)
@@ -115,8 +119,6 @@ GEM
     ice_nine (0.11.1)
     journey (1.0.4)
     json (1.8.3)
-    json-schema (2.5.1)
-      addressable (~> 2.3.7)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -124,6 +126,8 @@ GEM
       atomic (~> 1.0)
       avl_tree (~> 1.2.0)
       hitimes (~> 1.1)
+    metriks-librato_metrics (1.0.3)
+      metriks (>= 0.9.9.6)
     micro_migrations (0.0.2)
       activerecord
       railties
@@ -182,8 +186,6 @@ GEM
       proxies (~> 0.2.0)
     sentry-raven (0.13.3)
       faraday (>= 0.7.6)
-    shoulda-matchers (2.8.0)
-      activesupport (>= 3.0.0)
     sidekiq (3.4.1)
       celluloid (~> 0.16.0)
       connection_pool (>= 2.1.1)
@@ -234,18 +236,19 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bunny
   connection_pool
   database_cleaner (~> 1.4.1)
   factory_girl (~> 2.6.0)
-  json-schema
+  fakefs
   metriks
+  metriks-librato_metrics
   micro_migrations
   pg
   rack
   rack-contrib
   rspec
   sentry-raven
-  shoulda-matchers
   sidekiq-status!
   sinatra (~> 1.4.6)
   sinatra-contrib (~> 1.4.4)

@@ -16,6 +16,7 @@ require 'final-api/model_extensions'
 require 'sidekiq'
 require 'travis-sidekiqs'
 require 'sidekiq-status'
+require 'travis/support/amqp'
 
 
 module FinalAPI
@@ -39,6 +40,8 @@ module FinalAPI
 
     def setup
       Travis::Database.connect
+      Log.establish_connection 'logs_database'
+      Log::Part.establish_connection 'logs_database'
 
       Sidekiq.configure_server do |config|
         config.redis = Travis.config.redis.merge(namespace: Travis.config.sidekiq.namespace)
@@ -56,6 +59,11 @@ module FinalAPI
           chain.add Sidekiq::Status::ClientMiddleware
         end
       end
+
+      Travis::Amqp.config = Travis.config.amqp
+
+      Travis::Metrics.setup
+      Travis::Notification.setup
 
 
       if FinalAPI.config.sentry_dsn
