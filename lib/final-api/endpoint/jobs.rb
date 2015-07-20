@@ -37,16 +37,10 @@ module FinalAPI::Endpoint
       app.get '/jobs/:job_id/logs' do
         log = Travis.service(:find_log, params).run
         halt 404 unless log
-        if log.removed_at
-          if request.accept?('application/json')
-            halt 200, FinalAPI::Builder.new(log).data.to_json
-          elsif request.accept?('text/plain')
-            content_type 'text/plain'
-            log_path = File.join(Travis.config.log_file_storage_path, "result_#{log.job_id}.log")
-            halt 200, File.read(log_path)
-          else
-            halt 406
-          end
+        if log.archived? and request.accept?('text/plain')
+          content_type 'text/plain'
+          log_path = File.join(Travis.config.log_file_storage_path, "results_#{log.job_id}.txt")
+          halt 200, File.read(log_path)
         else
           parts = log.parts.order(:number, :id)
           parts = parts.where("number > ?", params['after'].to_i) if params['after']

@@ -31,7 +31,8 @@ module FinalAPI
                 'commit' => build.commit.commit,
                 'branch' => build.commit.branch,
                 'message' => build.commit.message,
-                'result' => legacy_build_result(build),
+                'state' => build.state.to_s,
+                'result' => build.result,
                 'finished_at' => format_date(build.finished_at),
                 'started_at' => format_date(build.started_at)
               }

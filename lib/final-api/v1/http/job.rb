@@ -2,7 +2,7 @@ module FinalAPI
   module V1
     module Http
       class Job
-        include ::Travis::Api::Formats, ::Travis::Api::V1::Helpers::Legacy
+        include ::Travis::Api::Formats
 
         attr_reader :job, :commit
 
@@ -18,9 +18,8 @@ module FinalAPI
             'config' => job.obfuscated_config.stringify_keys,
             'repository_id' => job.repository_id,
             'build_id' => job.source_id,
-            'state' => job.finished? ? 'finished' : job.state.to_s,
-            'result' => legacy_job_result(job),
-            'status' => legacy_job_result(job),
+            'state' => job.state.to_s,
+            'result' => job.result,
             'started_at' => format_date(job.started_at),
             'finished_at' => format_date(job.finished_at),
             'commit' => commit.commit,

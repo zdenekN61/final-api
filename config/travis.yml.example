@@ -18,6 +18,7 @@ development:
   log_level: :debug
   origin_whitelist: '*'
   allowed_origin: '*'
+  log_file_storage_path: /var/log/travis-logs-storage
   database:
     database: travis_development
     username: <%= ENV['USER'] %>
@@ -29,6 +30,8 @@ development:
     vhost: travisci.development
 
 test:
+  log_level: :warn
+  log_file_storage_path: /tmp
   database:
     host: localhost
     database: travis_test

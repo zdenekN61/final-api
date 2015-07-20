@@ -166,14 +166,14 @@ describe 'Jobs' do
     context "when parts are deleted" do
       let!(:log_data) { "Raw log data" }
       let!(:job) { Factory(:test, state: 'passed'); }
-      let!(:log) { Log.create(job_id: job.id, aggregated_at: Time.now, archived_at: Time.now, removed_at: Time.now) }
+      let!(:log) { Log.create(job_id: job.id, aggregated_at: Time.now, archived_at: Time.now, archive_verified: true) }
 
       context "when accept encoding it text/plain" do
         it "returns row log" do
           require 'pp' #don't know why but it is neccessary to load pp before fakefs
           require "fakefs"
           FakeFS do
-            log_file_name = "#{Travis.config.log_file_storage_path}/result_#{job.id}.log"
+            log_file_name = "#{Travis.config.log_file_storage_path}/results_#{job.id}.txt"
             FileUtils.mkdir_p(Travis.config.log_file_storage_path)
             File.open(log_file_name, 'w+') do |w|
               w.write log_data
