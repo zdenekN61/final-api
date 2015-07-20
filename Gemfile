@@ -28,6 +28,8 @@ gem 'bunny'
 
 gem 'metriks-librato_metrics'
 
+gem 'unicorn'
+
 
 group :test do
   gem 'rspec'
