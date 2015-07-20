@@ -1,26 +1,6 @@
 GIT
-  remote: git://github.com/final-ci/travis-sidekiqs.git
-  revision: e3dce4adcd41d72b87cca903a7e419af17bc258c
-  specs:
-    travis-sidekiqs (0.0.1)
-      sidekiq
-
-GIT
-  remote: git://github.com/final-ci/travis-support.git
-  revision: 592ccf7dbb6cc631c200c64d3f682ed593fb2aa1
-  specs:
-    travis-support (0.0.1)
-
-GIT
-  remote: git://github.com/utgarda/sidekiq-status.git
-  revision: e77d5dc2ea0a249ccbbafead21ece59d6b8caf73
-  ref: e77d5dc2ea0a249ccbbafead21ece59d6b8caf73
-  specs:
-    sidekiq-status (0.5.3)
-      sidekiq (>= 2.7)
-
-PATH
-  remote: ../travis-core
+  remote: git://github.com/final-ci/travis-core.git
+  revision: ce3b484d6a7249329891c90c7e5c3dfbbb8b4cdb
   specs:
     travis-core (0.0.1)
       actionmailer (~> 3.2.19)
@@ -41,6 +21,27 @@ PATH
       thor (~> 0.14.6)
       travis-config (~> 0.1.0)
       virtus (~> 1.0.0)
+
+GIT
+  remote: git://github.com/final-ci/travis-sidekiqs.git
+  revision: e3dce4adcd41d72b87cca903a7e419af17bc258c
+  specs:
+    travis-sidekiqs (0.0.1)
+      sidekiq
+
+GIT
+  remote: git://github.com/final-ci/travis-support.git
+  revision: 592ccf7dbb6cc631c200c64d3f682ed593fb2aa1
+  specs:
+    travis-support (0.0.1)
+
+GIT
+  remote: git://github.com/utgarda/sidekiq-status.git
+  revision: e77d5dc2ea0a249ccbbafead21ece59d6b8caf73
+  ref: e77d5dc2ea0a249ccbbafead21ece59d6b8caf73
+  specs:
+    sidekiq-status (0.5.3)
+      sidekiq (>= 2.7)
 
 GEM
   remote: https://rubygems.org/

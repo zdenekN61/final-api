@@ -4,7 +4,7 @@ source "https://rubygems.org"
 ruby '2.2.2'
 
 #gem 'travis-core',        github: 'final-ci/travis-core'
-gem 'travis-core',        path: '../travis-core'
+gem 'travis-core',        github: 'final-ci/travis-core'
 gem 'travis-config',      '~> 0.1.0'
 gem 'travis-support',     github: 'final-ci/travis-support'
 gem 'pg'
