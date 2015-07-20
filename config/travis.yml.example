@@ -1,4 +1,3 @@
-
 production:
   sentry_dsn: http://example.com/...
 
@@ -32,10 +31,12 @@ development:
 test:
   log_level: :warn
   log_file_storage_path: /tmp
+  logs_database:
+    adapter: postgresql
+    database: travis_test
   database:
     host: localhost
     database: travis_test
-    username: <%= ENV['USER'] %>
   amqp:
     host: localhost
     port: 5672
