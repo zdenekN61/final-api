@@ -85,4 +85,7 @@ Show jobs' log
      curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' http://localhost:9292/jobs/1341/logs
      curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' http://localhost:9292/jobs/1341/logs?after=5 # log parts with number > 5
      curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' http://localhost:9292/jobs/1341/logs?after=5 # log parts with number > 5
+     #archived logs are returned as text/plain or application/json
+     curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' -H "Accept: text/plain" http://final-ci.cz.avg.com:9292/jobs/1341/logs
+     curl -i -H 'UserName: FIN'  -H 'AuthenticationToken: secret' -H "Accept: application/json" http://final-ci.cz.avg.com:9292/jobs/1341/logs #does not return content of log, only meta info
 
