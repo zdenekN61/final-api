@@ -20,11 +20,9 @@ module FinalAPI::Endpoint
             owner: request.owner
           ) #creates job matrix, which I need to destroy
           build.matrix.destroy_all
-          p params[:config]
         end
 
         halt 404 if build.nil?
-        p build
         FinalAPI::Builder.new(build).data.to_json
       end
 
