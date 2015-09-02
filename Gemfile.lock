@@ -1,4 +1,11 @@
 GIT
+  remote: git://github.com/final-ci/travis-config.git
+  revision: e4d915685dbd714166c2052e94565832518b7171
+  specs:
+    travis-config (0.1.1)
+      hashr (~> 0.0)
+
+GIT
   remote: git://github.com/final-ci/travis-core.git
   revision: 119b88a36fdc510e57d3fbadda572130cded2669
   specs:
@@ -232,8 +239,6 @@ GEM
     tilt (1.4.1)
     timers (4.0.1)
       hitimes
-    travis-config (0.1.2)
-      hashr (~> 0.0)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
@@ -270,7 +275,7 @@ DEPENDENCIES
   sinatra (~> 1.4.6)
   sinatra-contrib (~> 1.4.4)
   stash-client
-  travis-config (~> 0.1.0)
+  travis-config!
   travis-core!
   travis-sidekiqs!
   travis-support!
