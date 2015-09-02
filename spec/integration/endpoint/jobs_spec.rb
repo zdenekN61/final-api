@@ -55,8 +55,8 @@ describe 'Jobs' do
         expect(response.status).to eq 200
         result = JSON.parse(response.body)
         expect(result).to eq [
-          FinalAPI::Builder.new(job2).data,
-          FinalAPI::Builder.new(job1).data
+          FinalAPI::Builder.new(job1).data,
+          FinalAPI::Builder.new(job2).data
         ]
       end
     end

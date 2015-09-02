@@ -15,4 +15,5 @@ services:
 before_script:
   - 'cp config/database.yml.example config/database.yml'
   - 'cp config/travis.yml.example config/travis.yml'
-  - 'RAILS_ENV=test bundle exec rake db:create db:migrate --trace'
+  - 'RAILS_ENV=test bundle exec rake db:create db:structure:load --trace'
+
