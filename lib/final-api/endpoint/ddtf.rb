@@ -20,6 +20,8 @@ module FinalAPI::Endpoint
             owner: request.owner
           ) #creates job matrix, which I need to destroy
           build.matrix.destroy_all
+          build.cached_matrix_ids = nil
+          build.save!
         end
 
         halt 404 if build.nil?
@@ -36,6 +38,8 @@ module FinalAPI::Endpoint
           commit: build.commit,
           config: params[:config]
         )
+        build.cached_matrix_ids = nil
+        build.save!
         FinalAPI::Builder.new(job).data.to_json
       end
 
