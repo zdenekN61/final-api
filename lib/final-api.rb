@@ -39,6 +39,8 @@ module FinalAPI
     end
 
     def setup
+      Travis.logger.info "Starting Final-CI API in #{Travis.env}"
+
       Travis::Database.connect
       Log.establish_connection 'logs_database'
       Log::Part.establish_connection 'logs_database'
@@ -80,8 +82,6 @@ module FinalAPI
         config.graphite.port,
         config.graphite.options || {}
       ) if config.graphite
-
-
     end
   end
 end
