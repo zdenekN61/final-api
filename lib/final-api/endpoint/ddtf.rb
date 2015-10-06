@@ -5,6 +5,34 @@ module FinalAPI::Endpoint
 
     def self.registered(app)
 
+
+      app.get '/ddtf/announcements' do
+        {
+          #TODO: neets to be plural 'anoncements' - it is array
+          announcement: [ 'Testing system - get rid of DB4o alfa version ' ]
+        }.to_json
+      end
+
+      app.get '/ddtf/tests' do
+        limit = params[:limit] ? params[:limit].to_i : 20
+        offset = params[:offset] ? params[:offset].to_i : 0
+        builds = Build.order(Build.arel_table['created_at'].desc).limit(params[:limit]).offset(offset)
+        builds.each { |b| b.sanitize } # HACK: workaround make builds valid
+        FinalAPI::V1::Http::DDTF_Builds.new(builds, {}).data.to_json
+      end
+
+      app.get '/ddtf/tests/:id' do
+        build = Build.find(params[:id])
+        FinalAPI::V1::Http::DDTF_Build.new(build, {}).test_data.to_json
+      end
+
+      app.get '/ddtf/tests/:id/parts' do
+        build = Build.find(params[:id])
+        FinalAPI::V1::Http::DDTF_Build.new(build, {}).parts_data.to_json
+      end
+
+      ###
+
       app.post '/ddtf/builds' do
         build = nil
         ActiveRecord::Base.transaction do

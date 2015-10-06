@@ -16,6 +16,11 @@ module FinalAPI
 
       require 'final-api/v1/http/log'
       require 'final-api/v1/http/log_parts'
+
+
+
+      require 'final-api/v1/http/ddtf_build'
+      require 'final-api/v1/http/ddtf_builds'
     end
   end
 end

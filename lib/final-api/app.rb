@@ -13,6 +13,7 @@ require 'final-api/endpoint'
 module FinalAPI
   class App < Sinatra::Base
 
+    #use Rack::CommonLogger
     use Raven::Rack
     use Rack::PostBodyContentTypeParser
 
@@ -22,7 +23,7 @@ module FinalAPI
     register FinalAPI::Cors
 
     before do
-      auth
+      #auth
       content_type 'application/json'
     end
 

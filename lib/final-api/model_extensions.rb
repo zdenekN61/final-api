@@ -1,107 +1,31 @@
 require 'final-api/ddtf'
 
-class Request < Travis::Model
-  def to_hash
-    self.serializable_hash.slice(
-      "id",
-      "jid",
-      "state",
-
-      "head_commit",
-      "base_commit",
-      "commit_id",
-
-      #"payload",
-      "config",
-      "event_type",
-      "message",
-
-      "owner_id",
-      "owner_type",
-
-      "repository_id",
-      "result",
-      "source",
-
-      "created_at",
-      "started_at",
-      "finished_at",
-      "updated_at"
-    )
-
-  end
-end
-
-class Build < Travis::Model
+class Build
   include FinalAPI::DDTF
 
-  def to_hash
-    self.serializable_hash.slice(
-      "id",
-      "state",
-      "repository_id",
-      "commit_id",
-      "request_id",
-      "config",
+  def parts_groups
+    matrix.group_by { |t| t.config_vars_hash['PART'] }
+  end
 
-      "branch",
-      "number",
-
-      "created_at",
-      "received_at",
-      "started_at",
-      "finished_at",
-      "updated_at",
-      "canceled_at",
-      "duration" ,
-
-      "owner_id" ,
-      "owner_type",
-
-      "event_type" ,
-      "previous_state",
-      "pull_request_title",
-      "pull_request_number",
-
-      "cached_matrix_ids",
-    )
-
+  # set mandatory properties
+  # this is temporary solution for invalid data in DB
+  # ...and just for development phase
+  def sanitize
+    self.repository ||= Repository.first
+    self.owner ||= User.first
+    self.request ||= Request.new
+    self
   end
 end
 
-class Job < Travis::Model
-  def to_hash
-    self.serializable_hash.slice(
-      "id",
-      "state",
-      "number",
+class Job
+  include FinalAPI::DDTF
 
-      "repository_id",
-      "commit_id",
-      "source_id",
-      "source_type",
-      "queue",
-      "type",
-      "config",
-      "worker",
-
-      "created_at",
-      "received_at",
-      "queued_at",
-      "started_at",
-      "finished_at",
-      "updated_at",
-      "canceled_at",
-
-      "owner_id",
-      "owner_type",
-
-      "tags",
-      "allow_failure",
-      "result"
-    )
-
+  def ddtf_test_resutls
+    test_results_path = "../travis-test-results/results/#{id}.json"
+    raw_test_results = MultiJson.load(File.read(test_results_path)) rescue []
   end
+
 end
 
 
