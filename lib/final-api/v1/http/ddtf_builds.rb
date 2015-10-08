@@ -11,7 +11,7 @@ module FinalAPI
         end
 
         def data
-          builds.map { |build| DDTF_Build.new(build).data }
+          builds.map { |build| DDTF_Build.new(build).test_data }
         end
 
       end
