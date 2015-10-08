@@ -17,24 +17,34 @@ describe 'DDTF' do
 
 
   context "POST /ddtf/builds" do
-
-    it "create build and return it's json" do
-      repository = Factory(:repository)
-      user = Factory(:user)
-      config = {
+    let(:repository) { Factory(:repository) }
+    let(:config) do
+      {
         language: "tsd",
         env: ["MACHINE=x764 PART=1", "MACHINE=8x64 PART=1"],
         os: "windows"
       }
-      payload = {
+    end
+    let(:payload) do
+      {
         user_id: user.id,
         repository_id: repository.id,
         config: config
       }
+    end
+
+    it "create build and return it's json" do
       post '/ddtf/builds', payload, headers
       expect(last_response.status).to eq(200)
       response = MultiJson.load(last_response.body)
       expect(response['config']['language']).to eq('tsd')
+    end
+
+    it "set build to 'started' state" do
+      post '/ddtf/builds', payload, headers
+      expect(last_response.status).to eq(200)
+      response = MultiJson.load(last_response.body)
+      expect(response['state']).to eq('started')
     end
 
     it 'returns 404 when user and repository not specified' do
@@ -51,20 +61,28 @@ describe 'DDTF' do
 
 
   context "POST /ddtf/builds/:build_id/jobs" do
-    it "creates jobs and returns it's json" do
-      build = Factory(:build)
-      repository = build.repository
-      user = build.owner
-      config = {
+    let(:build) { Factory(:build) }
+    let(:repository) { Factory(:repository) }
+    let(:config) do
+      {
         language: "tsd",
         env: "MACHINE=x764 PART=1",
         os: "windows"
       }
+    end
+    it "creates job and returns it's json" do
       post "/ddtf/builds/#{build.id}/jobs", {config: config}, headers
       expect(last_response.status).to eq(200)
       result = MultiJson.load(last_response.body)
       expect(result['config']['env']).to eq('MACHINE=x764 PART=1')
       expect(result['config']['os']).to eq('windows')
+    end
+
+    it "set job to 'received' state" do
+      post "/ddtf/builds/#{build.id}/jobs", {config: config}, headers
+      expect(last_response.status).to eq(200)
+      result = MultiJson.load(last_response.body)
+      expect(result['state']).to eq('received')
     end
 
     it "returns 404 when build does not exists" do

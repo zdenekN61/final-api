@@ -49,6 +49,7 @@ module FinalAPI::Endpoint
           ) #creates job matrix, which I need to destroy
           build.matrix.destroy_all
           build.cached_matrix_ids = nil
+          build.start(started_at: Time.now.utc)
           build.save!
         end
 
@@ -66,8 +67,10 @@ module FinalAPI::Endpoint
           commit: build.commit,
           config: params[:config]
         )
+        job.receive(received_at: Time.now.utc)
         build.cached_matrix_ids = nil
         build.save!
+
         FinalAPI::Builder.new(job).data.to_json
       end
 
