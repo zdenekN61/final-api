@@ -67,7 +67,7 @@ module FinalAPI
               name: part_name,
               result: sum_states(jobs.map(&:state)),
               machines: jobs.map do |job|
-                { os: job.config_vars_hash['MACHINE'], result: job.state, id: job.id }
+                { os: job.ddtf_machine, result: job.state, id: job.id }
               end,
               testCases: ddtf_test_cases(jobs)
             }
@@ -87,10 +87,33 @@ module FinalAPI
         end
 
         def ddtf_test_cases(jobs)
-          job = jobs.first
-          job.ddtf_test_resutls.map do |test_case|
-            ddtf_convert_case(job, test_case)
+          result = []
+          jobs.each do |job|
+            job_result = job.ddtf_test_resutls.map do |test_case|
+              ddtf_convert_case(job, test_case)
+            end
+
+            result = ddtf_add_result(result, job_result)
           end
+          result
+        end
+
+        # helper method
+        # merge result and job_result together
+        # it is array of test cases. Each TestCase contains array of test steps.
+        def ddtf_add_result(result, job_result)
+          0.upto([result.size, job_result.size].max - 1) do |idx|
+            add = job_result[idx] || {}
+            res = result[idx] || add
+
+            result[idx] = res.deep_merge(add)
+            test_steps_res = res[:testSteps] || []
+            test_steps_add = add[:testSteps] || []
+            0.upto([test_steps_res.size, test_steps_add.size].max - 1) do |t_idx|
+              result[idx][:testSteps][t_idx] = (test_steps_res[t_idx] || {}).deep_merge(test_steps_add[t_idx] || {})
+            end
+          end
+          result
         end
 
         def sum_states(states)
@@ -123,7 +146,7 @@ module FinalAPI
             return {
               description: 'unknown step',
               machines: {
-                ddtf_machine(job) => { result: 'NotSet' }
+                job.ddtf_machine => { result: 'NotSet' }
               }
             }
           end
@@ -132,14 +155,9 @@ module FinalAPI
             id: step['uuid'],
             description: step['name'],
             machines: {
-              ddtf_machine(job) => { result: step['result'] }
+              job.ddtf_machine => { result: step['result'] }
             }
           }
-        end
-
-
-        def ddtf_machine(job)
-          job.config_vars_hash['MACHINE'] || 'Unknown machine'
         end
 
         def test_steps_results(test_steps)

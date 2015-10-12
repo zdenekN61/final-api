@@ -23,7 +23,7 @@ module FinalAPI
     register FinalAPI::Cors
 
     before do
-      auth
+      #auth
       content_type 'application/json'
     end
 
