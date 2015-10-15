@@ -15,36 +15,39 @@ module FinalAPI
 
         #statuses are mapped in app/common/filters/status-class-filter.js on AtomUI side
         def test_data
+          config_vars = build.config_vars_hash
+          config = build.config
+
           {
             'id' => build.id,
-            'name' => 'TODO: `name` needs to be persisted to DB as column', #config_vars_hash['NAME']
-            'description' => 'TODO: `description` needs to be persisted to DB as column', #config_vars_hash['DESCRIPTION']
-            'branch' => 'TODO: `branch` rename as package_provider - needs to be persisted to DB as column',
-            'build' => 'TODO: `build` needs to be persisted to DB as column',
-            'queueName' => 'TODO: use regular tagging library?',
+            'name' => config[:name],
+            'description' => config[:description],
+            'branch' => config[:branch],
+            'build' => config[:build],
+            'queueName' => config[:queueName],
 
             #configured, pending, running, stopping, finished, stoped, aborted
             'status' => build.state, #TODO: convert to state?
-            'strategy': 'TODO: `strategy` needs to be persisted to DB as column',
-            'email': 'TODO: `email` needs to be persisted to DB as column', #owner.email
+            'strategy': config[:strategy],
+            'email': config[:email],
 
             'started': build.created_at.to_s,  #TODO remove to_s
             'enqueued': build.started_at.to_s, #TODO remove to_s
-            'startedBy': 'TODO', #build.owner.name,
-            'enqueuedBy': 'TODO', #build.owner.name,    #TODO will be removed
+            'startedBy': build.owner.try(:name).to_s,
+            'enqueuedBy': build.owner.try(:name).to_s,    #TODO will be removed
 
             'stopped': build.state == 'cancelled',   # TODO: what does it mean status cancelled?
             'stoppedBy': nil, # TODO
 
             'isTsd': true,
-            'checkpoints':    build.config_vars_hash['CHECKPOINTS'],
-            'debugging':      build.config_vars_hash['DEBBUGING'],
-            'buildSignal':    build.config_vars_hash['BUILD_SIGNAL'],
-            'scenarioScript': build.config_vars_hash['SCENARIO_SCRIPT'],
-            'packageSource':  build.config_vars_hash['PACKAGE_SOURCE'],
-            'executionLogs': request ? request.message : '',
-            'stashTSD': 'TODO: `build` needs to be persisted to DB as column',
-            'runtimeConfig': build.config['runtimeConfig'],
+            'checkpoints':    config[:checkpoints],
+            'debugging':      config[:debbuging],
+            'buildSignal':    config[:build_signal],
+            'scenarioScript': config[:scenario_script],
+            'packageSource':  config[:package_source],
+            'executionLogs':  request.try(:message).to_s,
+            'stashTSD':       config[:tsd_content],
+            'runtimeConfig':  config[:runtimeConfig],
 
             'parts': parts_status,
             'tags': [],

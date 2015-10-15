@@ -59,13 +59,14 @@ module FinalAPI::Endpoint
 
       app.post '/ddtf/builds/:build_id/jobs' do
         build = Build.lock.find(params[:build_id])
+        parent_config = build.config.clone
+        parent_config.delete :tsdContent #just shrink size of config, we need specific TSD version for particular machine
         job = build.matrix.create!(
           owner: build.owner,
           number: "#{build.number}.#{build.matrix.count + 1}",
-          config: build.config,
           repository: build.repository,
           commit: build.commit,
-          config: params[:config]
+          config: parent_config.deep_merge(params[:config])
         )
         job.receive(received_at: Time.now.utc)
         build.cached_matrix_ids = nil
