@@ -47,7 +47,7 @@ module FinalAPI
             'packageSource':  config[:package_source],
             'executionLogs':  request.try(:message).to_s,
             'stashTSD':       config[:tsd_content],
-            'runtimeConfig':  config[:runtimeConfig],
+            'runtimeConfig':  ddtf_runtimeConfig,
 
             'parts': parts_status,
             'tags': [],
@@ -79,6 +79,13 @@ module FinalAPI
 
 
         private
+
+        def ddtf_runtimeConfig
+          runtimeConfig = build.config[:runtimeConfig] || {}
+          runtimeConfig.each_with_object([]) do |(key, value), obj|
+            obj << { 'definition' => key, 'value' => value }
+          end
+        end
 
         def parts_status
           build.parts_groups.map do |part_name, jobs|
