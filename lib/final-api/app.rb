@@ -23,7 +23,7 @@ module FinalAPI
     register FinalAPI::Cors
 
     before do
-      #auth
+      auth
       content_type 'application/json'
     end
 
@@ -89,6 +89,10 @@ module FinalAPI
       def auth
         @user_name = env['HTTP_USERNAME']
         @authenticationToken = env['HTTP_AUTHENTICATIONTOKEN']
+
+        #FIXME: temporary hack unless we support JWT auth
+        @user_name ||= User.first.login
+        @authenticationToken ||= 'anything'
 
         if @user_name.blank? or @authenticationToken.blank?
           halt 401, {:result => 'error', :message => "Invalid user credentials"}.to_json

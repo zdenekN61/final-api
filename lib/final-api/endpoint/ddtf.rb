@@ -13,11 +13,17 @@ module FinalAPI::Endpoint
         }.to_json
       end
 
+      # /ddtf/tests?limit=20&offset=0&q=yyyy+id:+my_id
       app.get '/ddtf/tests' do
         limit = params[:limit] ? params[:limit].to_i : 20
         offset = params[:offset] ? params[:offset].to_i : 0
-        builds = Build.order(Build.arel_table['created_at'].desc).limit(params[:limit]).offset(offset)
-        builds.each { |b| b.sanitize } # HACK: workaround make builds valid
+        builds = Build.order(Build.arel_table['created_at'].desc).limit(limit).offset(offset)
+        builds = builds.ddtf_search(params[:q])
+
+        # HACK: workaround make builds valid, could be removed later, when DB 
+        # will be valid
+        builds.each { |b| b.sanitize }
+
         FinalAPI::V1::Http::DDTF_Builds.new(builds, {}).data.to_json
       end
 

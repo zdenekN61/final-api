@@ -178,7 +178,6 @@ describe 'Jobs' do
             File.open(log_file_name, 'w+') do |w|
               w.write log_data
             end
-            puts File.read(log_file_name)
             response = get "/jobs/#{job.id}/logs", { after: 1 }, headers.update('HTTP_ACCEPT' => 'text/plain')
             expect(response.body).to eq(log_data)
           end

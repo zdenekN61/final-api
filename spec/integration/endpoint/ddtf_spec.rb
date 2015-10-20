@@ -91,4 +91,129 @@ describe 'DDTF' do
     end
   end
 
+
+  context 'GET /ddtf/tests' do
+    it 'returns last 20 builds by default' do
+      1.upto(22) do |idx|
+        Factory(:build, {config: { name: idx.to_s } })
+      end
+      get "/ddtf/tests", {}, headers
+      expect(last_response.status).to eq(200)
+      response = MultiJson.load(last_response.body)
+      expect(response.last['name']).to eq '3'
+      expect(response.first['name']).to eq '22'
+      expect(response.size).to eq 20
+    end
+
+    it 'limit results by limit param' do
+      1.upto(3) do |idx|
+        Factory(:build, {config: { name: idx.to_s } })
+      end
+      get "/ddtf/tests", { limit: 2}, headers
+      expect(last_response.status).to eq(200)
+      response = MultiJson.load(last_response.body)
+      expect(response.size).to eq 2
+    end
+
+    it 'paginate by limit and offset params' do
+      1.upto(5) do |idx|
+        Factory(:build, {config: { name: idx.to_s } })
+      end
+      get "/ddtf/tests", { limit: 2, offset: 2}, headers
+      expect(last_response.status).to eq(200)
+      response = MultiJson.load(last_response.body)
+      expect(response.last['name']).to eq '2'
+      expect(response.first['name']).to eq '3'
+      expect(response.size).to eq 2
+    end
+
+    describe 'filter by "q" param' do
+      let!(:builds) do
+        (1..20).map do |idx|
+          Factory(:build, {config: { name: idx.to_s } })
+        end
+      end
+
+      it 'search by \'nam\' and \'name\' keyword with contains operator' do
+        get "/ddtf/tests", { q: 'nam: 2' }, headers
+        expect(last_response.status).to eq(200)
+        response1 = MultiJson.load(last_response.body)
+        expect(response1.size).to eq 3 # '2', '12', '20'
+
+        get '/ddtf/tests', { q: 'name: 2'}, headers
+        expect(last_response.status).to eq(200)
+        response2 = MultiJson.load(last_response.body)
+        expect(response2).to eq response1
+      end
+
+      it 'search by \'nam\' and \'name\' keyword with = operator' do
+        get "/ddtf/tests", { q: 'nam= 2' }, headers
+        expect(last_response.status).to eq(200)
+        response1 = MultiJson.load(last_response.body)
+        expect(response1.size).to eq 1
+
+        get '/ddtf/tests', { q: 'name= 2'}, headers
+        expect(last_response.status).to eq(200)
+        response2 = MultiJson.load(last_response.body)
+        expect(response2).to eq response1
+      end
+
+      it 'serch by combination of keywords' do
+        b = builds.last
+        get '/ddtf/tests', { q: "name : #{b.config[:name]} id = \"#{b.id}\""}, headers
+        response = MultiJson.load(last_response.body)
+        expect(response.size).to eq 1
+        expect(response.first['id']).to eq b.id
+      end
+
+    end
+
+    it 'returs proper structure' do
+      build = Factory(:build, {
+        config: {
+          name: 'TSD name',
+          description: 'myDescription'
+        }
+      })
+
+      get "/ddtf/tests", {}, headers
+      response = MultiJson.load(last_response.body).first
+      expect(response).to include({
+        "id"=>build.id,
+        "name"=>"TSD name",
+        "description"=>"myDescription",
+        "branch"=>nil,
+        "build"=>nil,
+        "queueName"=>nil,
+        "status"=>"passed",
+        "strategy"=>nil,
+        "email"=>nil,
+        "startedBy"=>"Sven Fuchs",
+        "enqueuedBy"=>"Sven Fuchs",
+        "stopped"=>false,
+        "stoppedBy"=>nil,
+        "isTsd"=>true,
+        "checkpoints"=>nil,
+        "debugging"=>nil,
+        "buildSignal"=>nil,
+        "scenarioScript"=>nil,
+        "packageSource"=>nil,
+        "executionLogs"=>"",
+        "stashTSD"=>nil,
+        "runtimeConfig"=>[],
+        "parts"=>[{"name"=>nil, "result"=>"passed"}],
+        "tags"=>[],
+        "result"=>"passed",
+        "results"=>[{"type"=>"NotSet", "value"=>1}]
+      })
+    end
+  end
+
+  context 'GET /ddtf/tests/:id' do
+    it 'returns particular build converted'
+  end
+
+  context 'GET /ddtf/tests/:id/part' do
+    it 'TODO ..write tests here'
+  end
 end

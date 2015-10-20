@@ -11,6 +11,8 @@ production:
     username: travisci_worker
     password: travisci_worker_password
     vhost: travisci.development
+  test_results:
+    results_path: '/data/final-ci/test-results'
 
 
 development:
