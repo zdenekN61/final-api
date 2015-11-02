@@ -29,58 +29,11 @@ module FinalAPI
 
     ## Endpoints
 
+    register FinalAPI::Endpoint::Uptime
     register FinalAPI::Endpoint::Requests
     register FinalAPI::Endpoint::Builds
     register FinalAPI::Endpoint::Jobs
     register FinalAPI::Endpoint::DDTF
-
-    ## Builds
-
-    #get '/builds' do
-    #  builds = Build.all.map(&:ddtf_test)
-    #  Builder.data(builds).to_json
-    #end
-
-
-    #get '/builds/:id' do
-    #  build = nil
-    #  begin
-    #    build = Build.find(params[:id])
-    #  rescue ActiveRecord::RecordNotFound => err
-    #    halt 404
-    #  end
-    #  Builder.data(build).to_json
-    #end
-
-    ### Jobs
-
-    #get '/jobs/:id' do
-    #  build = nil
-    #  begin
-    #    job = Job::Test.find(params[:id])
-    #  rescue ActiveRecord::RecordNotFound => err
-    #    halt 404
-    #  end
-    #  Builder.data(job).to_json
-    #end
-
-    #get '/jobs/:id/logs' do
-    #end
-
-    #post 'jobs/:id/test_step_results' do
-    #  @test_step_result = TestStepResult.new(params)
-    #  save_and_respond(@test_step_result)
-    #end
-
-    #post 'jobs/:id/test_case_results' do
-    #  @test_case_result = TestCaseResult.new(params)
-    #  save_and_respond(@test_case_result)
-    #end
-
-    #put 'jobs/:job_id/test_step_results/:id' do
-    #end
-
-    #####
 
     run! if app_file == $0
 
