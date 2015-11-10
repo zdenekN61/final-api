@@ -1,3 +1,5 @@
+require 'active_support/core_ext/string/inflections'
+
 module FinalAPI
   module V1
     module Http
@@ -142,7 +144,7 @@ module FinalAPI
         end
 
         def ddtf_convert_case(job, test_case)
-          return { description: 'unknown test case', result: 'NotSet' } unless test_case
+          return { description: 'unknown test case', result: 'created' } unless test_case
 
           {
             description: test_case['classname'],
@@ -156,16 +158,22 @@ module FinalAPI
             return {
               description: 'unknown step',
               machines: {
-                job.ddtf_machine => { result: 'NotSet' }
+                job.ddtf_machine => { result: 'created' }
               }
             }
           end
+
+          resutl = nil
+          result = step['data']['status'] if step['data']
+          result ||= step['result']
+
+          result = result.camelize
 
           {
             id: step['uuid'],
             description: step['name'],
             machines: {
-              job.ddtf_machine => { result: step['result'] }
+              job.ddtf_machine => { result: result }
             }
           }
         end

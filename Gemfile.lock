@@ -257,6 +257,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport
   bunny
   connection_pool
   database_cleaner (~> 1.4.1)

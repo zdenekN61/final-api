@@ -30,6 +30,8 @@ gem 'metriks-librato_metrics'
 
 gem 'unicorn'
 
+gem 'activesupport'
+
 
 group :test do
   gem 'rspec'
