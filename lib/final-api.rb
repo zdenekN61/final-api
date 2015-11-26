@@ -1,4 +1,4 @@
-$: << "lib"
+$: << 'lib'
 
 require 'bundler/setup'
 require 'final-api/config'
@@ -18,10 +18,8 @@ require 'travis-sidekiqs'
 require 'sidekiq-status'
 require 'travis/support/amqp'
 
-
 module FinalAPI
   class << self
-
     def config
       @confg ||= FinalAPI::Config.load
     end
@@ -44,6 +42,9 @@ module FinalAPI
       Travis::Database.connect
       Log.establish_connection 'logs_database'
       Log::Part.establish_connection 'logs_database'
+      StepResult.establish_connection 'test_results_database'
+
+      TestAggregation::BuildResults.sum_results = custom_sum_results
 
       Sidekiq.configure_server do |config|
         config.redis = Travis.config.redis.merge(namespace: Travis.config.sidekiq.namespace)
@@ -67,7 +68,6 @@ module FinalAPI
       Travis::Metrics.setup
       Travis::Notification.setup
 
-
       if FinalAPI.config.sentry_dsn
         ::Raven.configure do |config|
           config.dsn = FinalAPI.config.sentry_dsn
@@ -82,6 +82,34 @@ module FinalAPI
         config.graphite.port,
         config.graphite.options || {}
       ) if config.graphite
+    end
+
+    private
+
+    def custom_sum_results(results)
+      r = results.reject { |_res, count| count <= 0 }.keys.uniq
+
+      # when 'errored' step exists
+      return 'errored' if r.include?('errored')
+
+      # when 'failed' step exists
+      return 'failed' if r.include?('failed')
+
+      # when all are 'created', then created
+      # when all are 'pending', then pending
+      return r.first if r.size == 1 && StepResult::RESULTS.include?(r.first)
+
+      return 'passed' if
+        r.include?('passed') &&
+        (r - %w(passed pending skipped notPerformed knownBug)).empty?
+
+      # when 'created' exists, e.g. test is still running
+      return 'created' if r.include?('created')
+
+      # when no results
+      return 'errored' if r.empty?
+
+      fail "Unknown result for: #{r.inspect}"
     end
   end
 end

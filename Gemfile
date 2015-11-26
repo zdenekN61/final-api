@@ -7,6 +7,9 @@ gem 'travis-core',        github: 'final-ci/travis-core'
 #gem 'travis-core',        path: '../travis-core'
 gem 'travis-config',      github: 'final-ci/travis-config'
 gem 'travis-support',     github: 'final-ci/travis-support'
+#gem 'test-aggregation',   path: '../test-aggregation'
+gem 'test-aggregation',   github: 'final-ci/test-aggregation'
+
 gem 'pg'
 
 gem 'micro_migrations'
