@@ -1,4 +1,5 @@
 require 'active_support/core_ext/string/inflections'
+require 'test_aggregation'
 
 module FinalAPI
   module V1
@@ -22,6 +23,8 @@ module FinalAPI
 
           {
             'id' => build.id,
+            'buildId' => build.id,
+            'ddtfUuid' => config[:ddtf_uuid] || config[:ddtf_uid],
             'name' => config[:name],
             'description' => config[:description],
             'branch' => config[:branch],
@@ -57,30 +60,25 @@ module FinalAPI
             'result': build.state,
 
             #progress bar:
-            'results': [
-              {
-                type: 'NotSet', #Passed, Failed, knownBug, notTested, NotSet
-                value: 1
-              }
-            ]
+            'results': ddtf_results_distribution
           }
         end
 
         def parts_data
-          build.parts_groups.map do |part_name, jobs|
-            {
-              name: part_name,
-              result: sum_states(jobs.map(&:state)),
-              machines: jobs.map do |job|
-                { os: job.ddtf_machine, result: job.state, id: job.id }
-              end,
-              testCases: ddtf_test_cases(jobs)
-            }
-          end
+          ddtf_test_aggregation_result.as_json
         end
 
 
         private
+
+        # returns hash of results of all test
+        def ddtf_results_distribution
+          res = ddtf_test_aggregation_result.results_hash
+          sum = res.values.inject(0.0) { |s,i| s + i }
+          res.inject([]) do |s, (result, count)|
+            s << { 'type' => result, 'value' => count.to_f / sum }
+          end
+        end
 
         def ddtf_runtimeConfig
           runtimeConfig = build.config[:runtimeConfig] || {}
@@ -93,93 +91,39 @@ module FinalAPI
           build.parts_groups.map do |part_name, jobs|
             {
               name: part_name,
-              result: sum_states(jobs.map(&:state))
+              result: ddtf_test_aggregation_result.result(part: part_name)
             }
           end
         end
 
-        def ddtf_test_cases(jobs)
-          result = []
-          jobs.each do |job|
-            job_result = job.ddtf_test_resutls.map do |test_case|
-              ddtf_convert_case(job, test_case)
-            end
+        def ddtf_test_aggregation_result
+          return @ddtf_test_aggregation_result if (
+            defined?(@ddtf_test_aggregation_result) &&
+            @ddtf_test_aggregation_result
+          )
 
-            result = ddtf_add_result(result, job_result)
-          end
-          result
-        end
-
-        # helper method
-        # merge result and job_result together
-        # it is array of test cases. Each TestCase contains array of test steps.
-        def ddtf_add_result(result, job_result)
-          0.upto([result.size, job_result.size].max - 1) do |idx|
-            add = job_result[idx] || {}
-            res = result[idx] || add
-
-            result[idx] = res.deep_merge(add)
-            test_steps_res = res[:testSteps] || []
-            test_steps_add = add[:testSteps] || []
-            0.upto([test_steps_res.size, test_steps_add.size].max - 1) do |t_idx|
-              result[idx][:testSteps][t_idx] = (test_steps_res[t_idx] || {}).deep_merge(test_steps_add[t_idx] || {})
-            end
-          end
-          result
-        end
-
-        def sum_states(states)
-          return 'failed' if states.include?('failed')
-          return 'errored' if states.include?('errored')
-          return 'cancelled' if states.include?('cancelled')
-
-          return 'passed' if states.all? { |t| t == 'passed' or t == 'Passed' }
-
-          return 'started' if states.include?('started')
-          return 'received' if states.include?('received')
-          return 'received' if states.include?('received')
-          return 'created' if states.include?('created')
-
-          raise "Unknown result state for #{states.inspect}"
-        end
-
-        def ddtf_convert_case(job, test_case)
-          return { description: 'unknown test case', result: 'created' } unless test_case
-
-          {
-            description: test_case['classname'],
-            result: 'Failed', #sum_states(test_steps_results(test_case['steps'])),
-            testSteps: Array.wrap(test_case['steps']).map { |step| ddtf_convert_step(job, step) }
-          }
-        end
-
-        def ddtf_convert_step(job,step)
-          unless step
-            return {
-              description: 'unknown step',
-              machines: {
-                job.ddtf_machine => { result: 'created' }
+          @ddtf_test_aggregation_result ||= TestAggregation::BuildResults.new(
+            build,
+            ->(job) { job.ddtf_part },
+            ->(job) { job.ddtf_machine },
+            lambda do |step_result|
+              {
+                description: step_result.name,
+                machines: step_result.results.inject({}) do |s, (k, v)|
+                  res = (v[:data] and v[:data]['status'])
+                  res ||= v[:result]
+                  s[k] = { result: res.downcase.camelize, message: '' }
+                  s
+                end
               }
-            }
+            end
+          )
+          build.matrix.each do |job|
+            StepResult.where(job_id: job.id).order('id desc').each do |sr|
+              @ddtf_test_aggregation_result.parse(sr.data)
+            end
           end
-
-          resutl = nil
-          result = step['data']['status'] if step['data']
-          result ||= step['result']
-
-          result = result.camelize
-
-          {
-            id: step['uuid'],
-            description: step['name'],
-            machines: {
-              job.ddtf_machine => { result: result }
-            }
-          }
-        end
-
-        def test_steps_results(test_steps)
-          Array.wrap(test_steps).map { |step| step['result'] }
+          @ddtf_test_aggregation_result
         end
 
       end
