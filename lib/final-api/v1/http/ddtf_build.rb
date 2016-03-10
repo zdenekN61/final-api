@@ -18,13 +18,14 @@ module FinalAPI
 
         #statuses are mapped in app/common/filters/status-class-filter.js on AtomUI side
         def test_data
-          config_vars = build.config_vars_hash
           config = build.config
 
           {
             'id' => build.id,
             'buildId' => build.id,
-            'ddtfUuid' => config[:ddtf_uuid] || config[:ddtf_uid],
+            'ddtfUuid' => config[:ddtf_uuid] ||
+              config[:ddtf_uid] ||
+              config[:ddtfUuid],
             'name' => config[:name],
             'description' => config[:description],
             'branch' => config[:branch],
