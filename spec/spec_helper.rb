@@ -6,6 +6,7 @@ require 'final-api'
 require 'rack/test'
 require 'factories'
 require 'sidekiq/testing'
+require 'test_aggregation'
 
 
 FinalAPI.setup
