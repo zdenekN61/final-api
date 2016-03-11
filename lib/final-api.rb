@@ -19,6 +19,7 @@ require 'sidekiq-status'
 require 'travis/support/amqp'
 
 require 'test_aggregation'
+require 'tsd_utils'
 
 module FinalAPI
   class << self
@@ -75,7 +76,7 @@ module FinalAPI
           config.dsn = FinalAPI.config.sentry_dsn
           config.environments = %w[ production ]
           config.current_environment = FinalAPI.env
-          config.excluded_exceptions = %w{Siatra::NotFound}
+          config.excluded_exceptions = %w{Sinatra::NotFound}
         end
       end
 
@@ -84,6 +85,8 @@ module FinalAPI
         config.graphite.port,
         config.graphite.options || {}
       ) if config.graphite
+
+      TsdUtils.config = FinalAPI.config[:tsd_utils]
     end
 
     private

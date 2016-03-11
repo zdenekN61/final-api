@@ -15,8 +15,8 @@ production:
     results_path: '/data/final-ci/test-results'
   ddtf:
     command_node_queue: commands.windows.ussnode
+    node_queue: builds.windows.ussnode
     cancel_command_prefix: cmd.
-
 development:
   log_level: :debug
   origin_whitelist: '*'
@@ -53,3 +53,9 @@ test:
   ddtf:
     command_node_queue: commands.windows.ussnode
     cancel_command_prefix: cmd.
+  test_results_database:
+    adapter: postgresql
+    database: real_test_results_db_name
+    host: 10.5.0.47
+    username: development
+    password: development

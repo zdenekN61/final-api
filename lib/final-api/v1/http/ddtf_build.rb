@@ -69,6 +69,20 @@ module FinalAPI
           ddtf_test_aggregation_result.as_json
         end
 
+        def atom_response
+          {
+            id: build.id,
+            name: build.config[:name],
+            build: build.config[:build], # this is old DDTF build, not meaning test
+            result: 'NotSet',
+            results:
+            {
+              Type: 'NotSet',
+              Value: 1.0
+            },
+            enqueued: Time.now
+          }
+        end
 
         private
 
