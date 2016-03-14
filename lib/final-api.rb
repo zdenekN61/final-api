@@ -21,7 +21,7 @@ require 'travis/support/amqp'
 module FinalAPI
   class << self
     def config
-      @confg ||= FinalAPI::Config.load
+      @config ||= FinalAPI::Config.load
     end
 
     def logger
