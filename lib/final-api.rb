@@ -97,6 +97,12 @@ module FinalAPI
       # when 'failed' step exists
       return 'failed' if r.include?('failed')
 
+      return 'failed' if (
+        r.include?('nottested') ||
+        r.include?('notTested') ||
+        r.include?('not_tested')
+      )
+
       # when all are 'created', then created
       # when all are 'pending', then pending
       return r.first if r.size == 1 && TestAggregation::StepResult::RESULTS.include?(r.first)
