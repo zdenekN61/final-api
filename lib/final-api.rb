@@ -18,6 +18,8 @@ require 'travis-sidekiqs'
 require 'sidekiq-status'
 require 'travis/support/amqp'
 
+require 'test_aggregation'
+
 module FinalAPI
   class << self
     def config
