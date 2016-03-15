@@ -75,6 +75,13 @@ module FinalAPI
         # returns hash of results of all test
         def ddtf_results_distribution
           res = ddtf_test_aggregation_result.results_hash
+          %w(
+            NotPerformed notPerformed not_performed
+            Skipped skipped
+          ).each do |not_reported_state|
+            res.delete not_reported_state
+          end
+
           sum = res.values.inject(0.0) { |s,i| s + i }
           res.inject([]) do |s, (result, count)|
             s << { 'type' => result, 'value' => count.to_f / sum }
@@ -111,13 +118,15 @@ module FinalAPI
               {
                 description: step_result.name,
                 machines: step_result.results.inject({}) do |s, (k, v)|
-                  res = (v[:data] and v[:data]['status'])
-                  res ||= v[:result]
-                  s[k] = { result: res.downcase.camelize, message: '' }
+                  s[k] = { result: v[:result], message: '' }
                   s
                 end
               }
-            end
+            end,
+            ->(step_result) {
+              result = (step_result['data'] and step_result['data']['status']).try(:camelcase)
+              result ||= step_result['result'].downcase
+            }
           )
           build.matrix.each do |job|
             StepResult.where(job_id: job.id).order('id desc').each do |sr|

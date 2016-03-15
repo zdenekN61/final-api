@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/final-ci/test-aggregation.git
-  revision: 9942c1d0ce3baf9aa2b89ad108b3965e616308a1
+  revision: 0ac053949cf31353996341c98c2d6392eb1c7b9b
   specs:
     test-aggregation (0.1.0)
 

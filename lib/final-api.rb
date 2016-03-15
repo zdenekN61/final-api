@@ -103,7 +103,13 @@ module FinalAPI
 
       return 'passed' if
         r.include?('passed') &&
-        (r - %w(passed pending skipped notPerformed knownBug)).empty?
+        (
+          r - %w(passed pending
+                  skipped Skipped
+                  notPerformed NotPerformed
+                  knownBug KnownBug
+                )
+        ).empty?
 
       # when 'created' exists, e.g. test is still running
       return 'created' if r.include?('created')
