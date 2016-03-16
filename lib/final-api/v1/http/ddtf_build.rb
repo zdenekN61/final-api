@@ -118,7 +118,7 @@ module FinalAPI
               {
                 description: step_result.name,
                 machines: step_result.results.inject({}) do |s, (k, v)|
-                  s[k] = { result: v[:result], message: '' }
+                  s[k] = { result: v[:result], message: '', resultId: v[:uuid] }
                   s
                 end
               }
