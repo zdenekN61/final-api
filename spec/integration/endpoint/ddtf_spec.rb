@@ -168,7 +168,7 @@ describe 'DDTF' do
 
     end
 
-    it 'returs proper structure' do
+    it 'returns proper structure' do
       build = Factory(:build, {
         config: {
           name: 'TSD name',
