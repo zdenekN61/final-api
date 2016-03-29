@@ -1,7 +1,7 @@
 require 'final-api/builder'
 require 'tsd_utils'
 
-require 'final-api/endpoint/post/ddtf_tests/post_ddtf_tests'
+require 'final-api/helpers/ddtf_helpers'
 require 'securerandom'
 
 module FinalAPI
@@ -42,9 +42,9 @@ module FinalAPI
           end
 
           app.post '/ddtf/tests' do
-            request_body = MultiJson.load(request.body.read)
+            payload = MultiJson.load(request.body.read)
 
-            enqueue_data = TsdUtils::EnqueueData.new(request_body)
+            enqueue_data = TsdUtils::EnqueueData.new(payload)
 
             begin
               tsd = enqueue_data.load_tsd
@@ -54,12 +54,23 @@ module FinalAPI
 
             halt 400, enqueue_data.errors.to_json unless enqueue_data.valid?
 
-            build_params = PostDdtfTests.get_new_build_params(request_body, tsd)
-            build = DDTF.create_build(
-              build_params[:repository_id], build_params[:user_id], build_params[:config])
+            config = DdtfHelpers.build_config(payload, tsd)
+
+            user_name = env['HTTP_NAME']
+            halt 422, { error: "'name' header not specified" } if user_name.blank?
+            user = User.find_by_name(user_name) ||
+                   User.create!(
+                    name: user_name,
+                    login: user_name,
+                    email: "#{user_name}@#{FinalAPI.config.ddtf.email_domain}")
+
+            repository = Repository.find_by_name('uploaded-tsd') ||
+                         Repository.create!(name: 'uploaded-tsd', owner_name: user.name, owner_id: user.id, owner_type: 'User')
+
+            build = DdtfHelpers.create_build(repository.id, user.id, config)
 
             halt 422, { error: 'Could not create new build' }.to_json if build.nil?
-            request_body = request_body.merge('BuildId' => build.id)
+            payload = payload.merge('BuildId' => build.id)
 
             enqueue_data.normalize_runtime_config
             enqueue_data.resolve_strategy
@@ -71,12 +82,12 @@ module FinalAPI
               build_id: build.id,
               config: {
                 id: guid,
-                base_address: "http://local_ip_address/#{guid}",
+                base_address: "http://local_ip_address:port/#{guid}",
                 cluster_endpoint: cluster_endpoint,
                 cluster_name: cluster_name,
                 enqueued_by: request.env['HTTP_NAME']
               },
-              enqueue_data: TsdUtils::EnqueueData.prepare_xml(request_body),
+              enqueue_data: TsdUtils::EnqueueData.prepare_xml(payload),
               node_api_uri: "http://localhost:8732/#{guid}/api/" # TODO: resolve in node starter
             }
 
@@ -87,7 +98,7 @@ module FinalAPI
           end
 
           app.post '/ddtf/builds' do
-            build = DDTF.create_build(params['repository_id'], params['user_id'], params['config'])
+            build = DdtfHelpers.create_build(params['repository_id'], params['user_id'], params['config'])
             halt 404 if build.nil?
             FinalAPI::Builder.new(build).data.to_json
           end
@@ -138,37 +149,6 @@ module FinalAPI
             Travis.run_service(:reset_model, current_user, build_id: params['id'])
             halt 202
           end
-        end
-
-        def create_build(repository_id, user_id, config)
-          ActiveRecord::Base.transaction do
-            repo, commit, request = setup_build(repository_id, user_id)
-            owner = request.owner
-
-            build = Build.create!(
-              repository: repo, commit: commit, request: request, config: config, owner: owner)
-
-            postprocess_build(build)
-
-            build
-          end
-        end
-
-        def setup_build(repository_id, user_id)
-          repository = Repository.find(repository_id) || Repository.first
-          commit = repository.commits.create!(
-            commit: SecureRandom.hex(20), branch: 'branch', committed_at: Time.now)
-          request = Request.create!(
-            repository: repository, owner: User.find(user_id))
-
-          [repository, commit, request]
-        end
-
-        def postprocess_build(build)
-          build.matrix.destroy_all
-          build.cached_matrix_ids = nil
-          build.start(started_at: Time.now.utc)
-          build.save!
         end
       end
     end

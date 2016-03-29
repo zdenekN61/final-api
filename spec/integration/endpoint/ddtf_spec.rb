@@ -13,6 +13,7 @@ describe 'DDTF' do
     {
       'HTTP_ACCEPT' => 'application/json',
       'HTTP_USERNAME' => user.login,
+      'HTTP_NAME' => user.login,
       'HTTP_AUTHENTICATIONTOKEN' => 'secret'
     }
   end
@@ -244,6 +245,18 @@ describe 'DDTF' do
       end
     end
 
+    context 'name not specified in headers' do
+      before :each do
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:load_tsd) { {} }
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:valid?) { true }
+      end
+
+      it 'returns status code 422' do
+        post '/ddtf/tests', json_data, {}
+        expect(last_response.status).to eq(422)
+      end
+    end
+
     context 'build id not retrieved' do
       before do
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:load_tsd) { {} }
@@ -269,6 +282,7 @@ describe 'DDTF' do
       before do
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:valid?) { true }
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:load_tsd) { {} }
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:resolve_strategy)
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:clusters) { ['cluster'] }
         allow(FinalAPI::Endpoint::DDTF::PostDdtfTests).to receive(:get_new_build_params) { {} }
         allow(FinalAPI::Endpoint::DDTF).to receive(:create_build) { build }

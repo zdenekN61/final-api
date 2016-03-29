@@ -17,6 +17,8 @@ production:
     command_node_queue: commands.windows.ussnode
     node_queue: builds.windows.ussnode
     cancel_command_prefix: cmd.
+    email_domain: mail.com
+
 development:
   log_level: :debug
   origin_whitelist: '*'
@@ -34,6 +36,7 @@ development:
   ddtf:
     command_node_queue: commands.windows.ussnode
     cancel_command_prefix: cmd.
+    email_domain: mail.com
 
 test:
   log_level: :warn
@@ -53,6 +56,7 @@ test:
   ddtf:
     command_node_queue: commands.windows.ussnode
     cancel_command_prefix: cmd.
+    email_domain: mail.com
   test_results_database:
     adapter: postgresql
     database: real_test_results_db_name
