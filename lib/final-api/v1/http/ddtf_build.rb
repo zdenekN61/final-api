@@ -89,10 +89,7 @@ module FinalAPI
         end
 
         def ddtf_runtimeConfig
-          runtimeConfig = build.config[:runtimeConfig] || {}
-          runtimeConfig.each_with_object([]) do |(key, value), obj|
-            obj << { 'definition' => key, 'value' => value }
-          end
+          runtimeConfig = build.config[:runtimeConfig] || []
         end
 
         def parts_status
