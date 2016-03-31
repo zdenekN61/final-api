@@ -16,6 +16,7 @@ module FinalAPI
     use Rack::CommonLogger
     use Raven::Rack
     use Rack::PostBodyContentTypeParser
+    use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
     register FinalAPI::ErrorHandling
     set :show_exceptions, false
