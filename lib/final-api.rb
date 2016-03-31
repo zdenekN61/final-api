@@ -92,7 +92,7 @@ module FinalAPI
     private
 
     def custom_sum_results(results)
-      r = results.reject { |_res, count| count <= 0 }.keys.uniq.compact
+      r = results.reject { |_res, count| count <= 0 }.keys.uniq.compact.map(&:to_s)
 
       # when 'errored' step exists
       return 'errored' if r.include?('errored')
@@ -106,27 +106,24 @@ module FinalAPI
         r.include?('not_tested')
       )
 
-      # when all are 'created', then created
-      # when all are 'pending', then pending
-      return r.first if r.size == 1 && TestAggregation::StepResult::RESULTS.include?(r.first)
+      return 'created' if r.include?('pending') || r.include?('created')
 
       return 'passed' if
         r.include?('passed') &&
         (
-          r - %w(passed pending
+          r - %w(passed
                   skipped Skipped
                   notPerformed NotPerformed
                   knownBug KnownBug
                 )
         ).empty?
 
-      # when 'created' exists, e.g. test is still running
-      return 'created' if r.include?('created')
-
       # when no results
       return 'errored' if r.empty?
 
-      fail "Unknown result for: #{r.inspect}"
+      # Code never should goes here
+      FinalAPI.logger.error "Unknown result for: #{r.inspect}"
+      return 'errored'
     end
   end
 end
