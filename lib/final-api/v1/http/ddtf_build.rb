@@ -30,7 +30,6 @@ module FinalAPI
             'description' => config[:description],
             'branch' => config[:branch],
             'build' => config[:build],
-            'queueName' => config[:queueName],
 
             #configured, pending, running, stopping, finished, stoped, aborted
             'status' => build.state, #TODO: convert to state?
@@ -40,9 +39,8 @@ module FinalAPI
             'started': build.created_at.to_s,  #TODO remove to_s
             'enqueued': build.started_at.to_s, #TODO remove to_s
             'startedBy': build.owner.try(:name).to_s,
-            'enqueuedBy': build.owner.try(:name).to_s,    #TODO will be removed
 
-            'stopped': build.state == 'cancelled',   # TODO: what does it mean status cancelled?
+            'stopped': build.state == 'cancelled',
             'stoppedBy': nil, # TODO
 
             'isTsd': true,
