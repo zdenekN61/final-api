@@ -76,19 +76,15 @@ module FinalAPI
             enqueue_data.resolve_strategy
             cluster_name = enqueue_data.clusters.first
             cluster_endpoint = FinalAPI.config.tsd_utils.clusters[cluster_name.to_sym]
-            guid = format('00000000-0000-0000-0000-%012d', build.id)
 
             node_starter_data = {
               build_id: build.id,
               config: {
-                id: guid,
-                base_address: "http://local_ip_address:port/#{guid}",
                 cluster_endpoint: cluster_endpoint,
                 cluster_name: cluster_name,
                 enqueued_by: request.env['HTTP_NAME']
               },
-              enqueue_data: TsdUtils::EnqueueData.prepare_xml(payload),
-              node_api_uri: "http://localhost:8732/#{guid}/api/" # TODO: resolve in node starter
+              enqueue_data: TsdUtils::EnqueueData.prepare_xml(payload)
             }
 
             publisher = Travis::Amqp::Publisher.new(Travis.config.ddtf.node_queue)
