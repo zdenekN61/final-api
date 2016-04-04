@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+$: << 'lib'
+require 'bundler/setup'
+require 'final-api'
+
+FinalAPI.setup
+
+require 'final-api/app'
+
+
+require "irb"
+IRB.start
