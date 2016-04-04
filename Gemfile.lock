@@ -56,8 +56,8 @@ GIT
       sidekiq (>= 2.7)
 
 GIT
-  remote: https://github.com/AVGTechnologies/tsd_utils
-  revision: f4064127cbb22c3867c63f5a618d810d0706f32f
+  remote: git@github.com:AVGTechnologies/tsd_utils.git
+  revision: 8f402a0c92c7dfb80b8cf41cef5abc74b0f046c6
   specs:
     tsd_utils (0.2.0)
       activesupport (= 3.2.22)
@@ -169,7 +169,7 @@ GEM
     multi_json (1.11.2)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
-    mustache (1.0.2)
+    mustache (1.0.3)
     net-http-persistent (2.9.4)
     net-http-pipeline (1.0.1)
     pg (0.18.4)

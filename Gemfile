@@ -9,7 +9,7 @@ gem 'travis-support',     github: 'final-ci/travis-support'
 gem 'test-aggregation',   github: 'final-ci/test-aggregation'
 gem 'travis-sidekiqs',    github: 'final-ci/travis-sidekiqs',   require: nil
 gem 'sidekiq-status',     github: 'utgarda/sidekiq-status',     ref: 'e77d5d'
-gem 'tsd_utils',          git: 'https://github.com/AVGTechnologies/tsd_utils'
+gem 'tsd_utils',          git: 'git@github.com:AVGTechnologies/tsd_utils.git'
 
 gem 'pg'
 gem 'connection_pool'
