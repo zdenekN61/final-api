@@ -46,7 +46,7 @@ describe 'DDTF' do
       post '/ddtf/builds', payload, headers
       expect(last_response.status).to eq(200)
       response = MultiJson.load(last_response.body)
-      expect(response['state']).to eq('started')
+      expect(response['state']).to eq('created')
     end
 
     it 'returns 404 when user and repository not specified' do
@@ -183,12 +183,10 @@ describe 'DDTF' do
         'description' => 'myDescription',
         'branch' => nil,
         'build' => nil,
-        'queueName' => nil,
         'status' => 'passed',
         'strategy' => nil,
         'email' => nil,
         'startedBy' => 'Sven Fuchs',
-        'enqueuedBy' => 'Sven Fuchs',
         'stopped' => false,
         'stoppedBy' => nil,
         'isTsd' => true,
@@ -230,6 +228,10 @@ describe 'DDTF' do
     context 'data not valid' do
       before :each do
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:load_tsd) { {} }
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:normalize)
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:resolve_strategy)
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:build)
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:resolve_email)
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:valid?) { false }
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:errors) { ['BOOM!'] }
       end
@@ -248,6 +250,8 @@ describe 'DDTF' do
     context 'name not specified in headers' do
       before :each do
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:load_tsd) { {} }
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:normalize)
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:resolve_strategy)
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:valid?) { true }
       end
 
@@ -260,9 +264,15 @@ describe 'DDTF' do
     context 'build id not retrieved' do
       before do
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:load_tsd) { {} }
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:normalize)
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:resolve_strategy)
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:build)
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:resolve_email)
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:valid?) { true }
-        allow(FinalAPI::Endpoint::DDTF::PostDdtfTests).to receive(:get_new_build_params) { {} }
-        allow(FinalAPI::Endpoint::DDTF).to receive(:create_build)
+        allow(FinalAPI::Endpoint::DDTF::DdtfHelpers).to receive(:get_new_build_params) { {} }
+        allow(FinalAPI::Endpoint::DDTF::DdtfHelpers).to receive(:create_build)
+
+        allow(FinalAPI.config.ddtf).to receive(:email_domain) { 'mail.com' }
       end
 
       it 'returns status code 422' do
@@ -282,13 +292,17 @@ describe 'DDTF' do
       before do
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:valid?) { true }
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:load_tsd) { {} }
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:normalize)
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:resolve_strategy)
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:build)
+        allow_any_instance_of(TsdUtils::EnqueueData).to receive(:resolve_email)
         allow_any_instance_of(TsdUtils::EnqueueData).to receive(:clusters) { ['cluster'] }
-        allow(FinalAPI::Endpoint::DDTF::PostDdtfTests).to receive(:get_new_build_params) { {} }
-        allow(FinalAPI::Endpoint::DDTF).to receive(:create_build) { build }
+        allow(FinalAPI::Endpoint::DDTF::DdtfHelpers).to receive(:get_new_build_params) { {} }
+        allow(FinalAPI::Endpoint::DDTF::DdtfHelpers).to receive(:create_build) { build }
 
         allow(FinalAPI.config).to receive_message_chain(:tsd_utils, :clusters) { {} }
         allow(FinalAPI.config).to receive(:allowed_origin) { '*' }
+        allow(FinalAPI.config.ddtf).to receive(:email_domain) { 'mail.com' }
 
         allow(TsdUtils::EnqueueData).to receive(:prepare_xml)
       end
@@ -305,7 +319,9 @@ describe 'DDTF' do
       end
 
       it 'adds build id' do
-        expect(TsdUtils::EnqueueData).to receive(:prepare_xml).with(hash_including('BuildId'))
+        expect_any_instance_of(Travis::Amqp::Publisher).to receive(:publish)
+          .with(hash_including(:enqueue_data => a_string_matching("<BuildId>#{build.id}</BuildId>")))
+
         post '/ddtf/tests', json_data, headers
       end
     end
