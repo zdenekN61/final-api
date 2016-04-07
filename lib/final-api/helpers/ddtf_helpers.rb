@@ -44,7 +44,7 @@ module FinalAPI
                 owner: owner,
                 name: config && config[:name],
                 build_info: config && config[:build],
-                proton_id: runtime_config && runtime_config[:protonId]
+                proton_id: get_proton_id_from_runtime_config(runtime_config)
               )
 
               clean_build_matrix(build)
@@ -68,6 +68,16 @@ module FinalAPI
             build.cached_matrix_ids = nil
             # build.start(started_at: Time.now.utc)
             build.save!
+          end
+
+          private
+
+          def get_proton_id_from_runtime_config(runtime_config)
+             field = runtime_config && runtime_config.find do |item|
+               item[:definition].try(:downcase) == 'protonid'
+             end
+             return unless field
+             field[:value]
           end
         end
       end
