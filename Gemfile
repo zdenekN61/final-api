@@ -18,8 +18,9 @@ gem 'bunny'
 gem 'rack'
 gem 'rack-contrib'
 gem 'sinatra',            '~> 1.4.6', require: 'sinatra/base' # see https://github.com/resque/resque/issues/934
+gem 'rack-cache'
 gem 'sinatra-contrib',    '~> 1.4.4'
-gem 'unicorn'
+gem 'puma'
 
 gem 'sentry-raven'
 gem 'metriks'

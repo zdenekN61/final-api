@@ -33,11 +33,17 @@ module FinalAPI
 
           app.get '/ddtf/tests/:id' do
             build = Build.find(params[:id])
+            cache_control(:public, max_age: 36000) if build.finished?
+            last_modified build.updated_at
+            etag sha256.hexdigest(build.to_xml), :weak
             FinalAPI::V1::Http::DDTF_Build.new(build, {}).test_data.to_json
           end
 
           app.get '/ddtf/tests/:id/parts' do
             build = Build.find(params[:id])
+            last_modified build.updated_at
+            etag sha256.hexdigest(build.to_xml), :weak
+            cache_control(:public, max_age: 36000) if build.finished?
             FinalAPI::V1::Http::DDTF_Build.new(build, {}).parts_data.to_json
           end
 

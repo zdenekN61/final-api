@@ -4,6 +4,7 @@ require 'final-api'
 
 require 'rack'
 require 'rack/contrib'
+require 'rack/cache'
 require 'sinatra/base'
 require "sinatra/namespace"
 
@@ -17,6 +18,13 @@ module FinalAPI
     use Raven::Rack
     use Rack::PostBodyContentTypeParser
     use ActiveRecord::ConnectionAdapters::ConnectionManagement
+    use ActiveRecord::QueryCache
+    if FinalAPI.config.rack_cache && FinalAPI.config.rack_cache.enabled
+      use Rack::Cache,
+        verbose:     FinalAPI.config.rack_cache.verbose,
+        metastore:   FinalAPI.config.rack_cache.metastore,
+        entitystore: FinalAPI.config.rack_cache.entitystore
+    end
 
     register FinalAPI::ErrorHandling
     set :show_exceptions, false
@@ -59,6 +67,9 @@ module FinalAPI
         end
       end
 
+      def sha256
+        @sha256 ||= Digest::SHA256.new
+      end
 
       def current_user
         @current_user ||= User.find_by_login(@user_name)
