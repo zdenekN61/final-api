@@ -10,6 +10,27 @@ module FinalAPI
 
         attr_reader :build, :commit, :request
 
+        BUILD_STATE2API_V1STATUS = {
+          'created' => 'Configured',
+          'received' => 'Pending',
+          'started' => 'Running',
+          'passed' => 'Finished',
+          'failed' => 'Finished',
+          'canceled' => 'Stopped',
+          'errored' => 'Aborted',
+          '' => 'Unknown'
+        }
+
+        STATE2API_V1STATUS = {
+          'created' => 'NotSet',
+          'blocked' => 'NotTested',
+          'passed' => 'Passed',
+          'failed' => 'Failed',
+          'known_bug' => 'KnownBug',
+          'not_performed' => 'NotPerformed',
+          'skipped' => 'Skipped'
+        }
+
         def initialize(build, options = {})
           @build = build
           @commit = build.commit
@@ -31,8 +52,7 @@ module FinalAPI
             'branch' => config[:branch],
             'build' => build.build_info,
 
-            #configured, pending, running, stopping, finished, stoped, aborted
-            'status' => build.state, #TODO: convert to state?
+            'status' => BUILD_STATE2API_V1STATUS[build.state.to_s.downcase],
             'strategy': config[:strategy],
             'email': config[:email],
 
@@ -69,7 +89,7 @@ module FinalAPI
 
         def atom_response
           {
-            id: build.id,
+            id: build.id.to_s, # BAMBOO expects string in v1 API
             name: build.name,
             build: build.build_info,
             result: 'NotSet',
@@ -101,7 +121,7 @@ module FinalAPI
         end
 
         def ddtf_runtimeConfig
-          runtimeConfig = build.config[:runtimeConfig] || []
+          build.config[:runtimeConfig] || []
         end
 
         def parts_status
@@ -111,6 +131,12 @@ module FinalAPI
               result: ddtf_test_aggregation_result.result(part: part_name)
             }
           end
+        end
+
+
+        def state2api_v1status(step)
+          return 'NotSet' if step[:data][:status].nil? && step[:result] == 'pending'
+          STATE2API_V1STATUS[step[:data][:status] || step[:result]]
         end
 
         def ddtf_test_aggregation_result
@@ -125,11 +151,18 @@ module FinalAPI
             ->(job) { job.ddtf_machine },
             lambda do |step_result|
               {
+                id: step_result.__id__,
                 description: step_result.name,
                 machines: step_result.results.inject({}) do |s, (k, v)|
-                  s[k] = { result: v[:result], message: '', resultId: v[:uuid] }
+                  s[k] = { result: state2api_v1status(v), message: '', resultId: v[:uuid] }
                   s
-                end
+                end.merge(
+                  all: {
+                    result: step_result.results.all? do |(_k, v)|
+                      ['passed', 'pending'].include?(v[:result])
+                    end ? 'Passed' : 'Failed'
+                  }
+                )
               }
             end,
             ->(step_result) {
