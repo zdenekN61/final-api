@@ -73,11 +73,21 @@ module FinalAPI
           private
 
           def get_field_from_runtime_config(runtime_config, field_name)
-             field = runtime_config && runtime_config.find do |item|
-               item[:definition].try(:downcase) == field_name
-             end
-             return unless field
-             field[:value]
+            return if runtime_config.nil?
+
+            if Hash === runtime_config
+              field = runtime_config.find do |definition, value|
+                definition.to_s.try(:downcase) == field_name
+              end
+              return unless field
+              return field.last
+            else
+              field = runtime_config.find do |item|
+                item[:definition].try(:downcase) == field_name
+              end
+              return unless field
+              return field[:value]
+            end
           end
         end
       end
