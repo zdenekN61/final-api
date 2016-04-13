@@ -22,13 +22,19 @@ module FinalAPI
         }
 
         STATE2API_V1STATUS = {
+          # designed states in final-ci
           'created' => 'NotSet',
           'blocked' => 'NotTested',
           'passed' => 'Passed',
           'failed' => 'Failed',
+          # fix for Test aggregation step result re-writing
+          'nottested' => 'NotTested',
+          'knownbug' => 'KnownBug',
+          'skipped' => 'Skipped',
+           # data status re-write after node properly sends data
           'known_bug' => 'KnownBug',
-          'not_performed' => 'NotPerformed',
-          'skipped' => 'Skipped'
+          'not_performed' => 'NotPerformed'
+          # 'skipped' => 'Skipped'
         }
 
         def initialize(build, options = {})
@@ -133,10 +139,9 @@ module FinalAPI
           end
         end
 
-
         def state2api_v1status(step)
-          return 'NotSet' if step[:data][:status].nil? && step[:result] == 'pending'
-          STATE2API_V1STATUS[step[:data][:status] || step[:result]]
+          return 'NotSet' if step[:data]['status'].nil? && step[:result] == 'pending'
+          STATE2API_V1STATUS[step[:data]['status'] || step[:result]]
         end
 
         def ddtf_test_aggregation_result
