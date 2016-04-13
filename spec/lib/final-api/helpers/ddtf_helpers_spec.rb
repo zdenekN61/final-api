@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'final-api/app'
 
 describe FinalAPI::Endpoint::DDTF do
-  context "#get_proton_id_from_runtime_config" do
+  context "#get_field_from_runtime_config" do
     it "parses protonid correctly" do
       rt = [
         {definition: 'foo', value: 'bar'},
@@ -10,7 +10,7 @@ describe FinalAPI::Endpoint::DDTF do
         {definition: 'protonid', value: 'quux'},
       ]
       result = FinalAPI::Endpoint::DDTF::DdtfHelpers
-        .send(:get_proton_id_from_runtime_config, rt)
+        .send(:get_field_from_runtime_config, rt, 'protonid')
       expect(result).to eq('quux')
     end
   end

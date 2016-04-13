@@ -44,7 +44,7 @@ module FinalAPI
                 owner: owner,
                 name: config && config[:name],
                 build_info: config && config[:build],
-                proton_id: get_proton_id_from_runtime_config(runtime_config)
+                proton_id: get_field_from_runtime_config(runtime_config, 'protonid')
               )
 
               clean_build_matrix(build)
@@ -72,9 +72,9 @@ module FinalAPI
 
           private
 
-          def get_proton_id_from_runtime_config(runtime_config)
+          def get_field_from_runtime_config(runtime_config, field_name)
              field = runtime_config && runtime_config.find do |item|
-               item[:definition].try(:downcase) == 'protonid'
+               item[:definition].try(:downcase) == field_name
              end
              return unless field
              field[:value]
