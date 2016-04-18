@@ -144,6 +144,22 @@ module FinalAPI
           STATE2API_V1STATUS[step[:data]['status'] || step[:result]]
         end
 
+        def ddtf_v1_overall_status(results)
+          all_states = results.each_with_object([]) do |(k, v), result|
+            result << state2api_v1status(v)
+          end.uniq
+
+          return 'Skipped' if all_states.include? 'Skipped'
+          return 'Failed' if all_states.include? 'Failed'
+          return 'Invalid' if all_states.include? 'Invalid'
+          return 'NotTested' if all_states.include? 'NotTested'
+          return 'KnownBug' if all_states.include? 'KnownBug'
+          return 'NotSet' if all_states.include? 'NotSet'
+          return 'Passed' if all_states.include? 'Passed'
+
+          'NotPerformed'
+        end
+
         def ddtf_test_aggregation_result
           return @ddtf_test_aggregation_result if (
             defined?(@ddtf_test_aggregation_result) &&
@@ -165,7 +181,7 @@ module FinalAPI
                   all: {
                     result: step_result.results.all? do |(_k, v)|
                       ['passed', 'pending'].include?(v[:result])
-                    end ? 'Passed' : 'Failed'
+                    end ? 'Passed' : ddtf_v1_overall_status(step_result.results)
                   }
                 )
               }
