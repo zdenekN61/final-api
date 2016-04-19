@@ -66,7 +66,7 @@ module FinalAPI
             'enqueued': build.started_at.to_s, #TODO remove to_s
             'startedBy': build.owner.try(:name).to_s,
 
-            'stopped': build.state == 'cancelled',
+            'stopped': build.state == 'canceled',
             'stoppedBy': build.stopped_by.try(:name), # TODO
 
             'isTsd': true,
