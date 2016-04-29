@@ -17,17 +17,17 @@ module FinalAPI
                 no_clone: true
               },
               name: enqueue_data.tsd['name'],
-              description: test_data.get_ikey('Description'),
+              description: enqueue_data.description,
               packageFrom: enqueue_data.package_from,
               branch: enqueue_data.package_source,
               build: test_data.get_ikey('Build'),
-              strategy: test_data.get_ikey('Strategy') || enqueue_data.tsd['defaultStrategy'],
-              email: test_data.get_ikey('Email'),
+              strategy: enqueue_data.tsd['defaultStrategy'] || test_data.get_ikey('Strategy'),
+              email: enqueue_data.email,
               checkpoint: test_data.get_ikey('Checkpoints'),
               scenarioScript: test_data.get_ikey('ScenarioScript'),
               stashTsd: test_data.get_ikey('StashTSD'),
               tsdContent: enqueue_data.tsd,
-              runtimeConfig: test_data.get_ikey('RuntimeConfigFields'),
+              runtimeConfig: enqueue_data.runtime_config,
               ddtfUuid: test_data.get_ikey('Id')
             }
           end
