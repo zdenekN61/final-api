@@ -275,53 +275,6 @@ describe 'DDTF' do
     end
   end
 
-  describe 'GET /ddtf/tests/new' do
-    before do
-      allow(TsdUtils::ContentFetcher).to receive(:load) do
-        {
-          'source': { 'GIT' => 'some link' }
-        }.to_json
-      end
-    end
-
-    it 'returns 400 when missing stashTsdLink parameter' do
-      get '/ddtf/tests/new'
-      expect(last_response.status).to eq(400)
-    end
-
-    it 'returns 200 and new test payload' do
-      get '/ddtf/tests/new?stashTSDLink=link'
-      result = JSON.parse(last_response.body)
-      expect(last_response.status).to eq(200)
-
-      expect(result['packageFrom']).to eq 'GIT'
-      expect(result['stashTSD']).to eq 'link'
-      expect(result['package']).to eq 'some link'
-    end
-
-    context 'when Content fetcher throws error' do
-      before do
-        allow(TsdUtils::ContentFetcher).to receive(:load) { raise ArgumentError }
-      end
-
-      it 'returns 404' do
-        get '/ddtf/tests/new?stashTSDLink=unexisting_tsd'
-        expect(last_response.status).to eq(404)
-      end
-    end
-
-    context 'when TSD is not valid' do
-      before do
-        allow(TsdUtils::ContentFetcher).to receive(:load) { 'Not valid tsd' }
-      end
-
-      it 'returns 404' do
-        get '/ddtf/tests/new?stashTSDLink=not_valid_tsd'
-        expect(last_response.status).to eq(404)
-      end
-    end
-  end
-
   describe 'POST /ddtf/tests/:id/retest' do
     before do
       allow_any_instance_of(TsdUtils::EnqueueData).to receive(:valid?) { true }
