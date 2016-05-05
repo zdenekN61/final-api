@@ -17,43 +17,6 @@ module FinalAPI
             }.to_json
           end
 
-          app.get '/ddtf/tests/new' do
-            halt 400, {
-                status: 'error',
-                data: nil,
-                message: 'Please provide stashTSDLink url'
-            }.to_json unless params[:stashTSDLink]
-
-            tsd = nil
-            begin
-              tsd_content = TsdUtils::ContentFetcher.load(params[:stashTSDLink])
-              tsd = JSON.parse(tsd_content)
-            rescue
-              halt 404, {
-                  status: 'error',
-                  data: nil,
-                  message: "Unable to load tsd from: #{params[:stashTSDLink]}"
-              }.to_json
-            end
-
-            source = tsd.get_ikey('source')
-
-            halt 200, {
-              email: tsd.get_ikey('responsible'),
-              packageFrom: source.get_ikey('git') ? 'GIT' : 'UNC',
-              package: source.get_ikey('git') || source.get_ikey('unc'),
-              strategy: tsd.get_ikey('defaultStrategy'),
-              build: nil,
-              description: tsd.get_ikey('description'),
-              scenarioScripts: false,
-              checkpoints: false,
-              stashTSD: params[:stashTSDLink],
-              runtimeConfigFields: tsd.get_ikey('runtimeConfig'),
-              tsd: tsd_content
-            }.to_json
-
-          end
-
           # /ddtf/tests?limit=20&offset=0&q=yyyy+id:+my_id
           app.get '/ddtf/tests' do
             limit = params[:limit] ? params[:limit].to_i : 20
@@ -177,7 +140,7 @@ module FinalAPI
             build.save!
 
             FinalAPI::Builder.new(job).data.to_json
-          end
+          end  
 
           # ids - ids of build separated by comma
           # otehrwise:
