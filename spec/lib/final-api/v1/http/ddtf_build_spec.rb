@@ -82,4 +82,71 @@ describe FinalAPI::V1::Http::DDTF_Build do
       end
     end
   end
+
+  context '#execution_logs' do
+    let(:first_message) do
+      {
+        position: '2',
+        timestamp: '2016-05-11T14:19:01.4310159Z',
+        message: 'second message'
+      }
+    end
+    let(:second_message) do
+      {
+        position: '1',
+        timestamp: '2016-05-11T14:18:33.0714487Z',
+        message: 'first message'
+      }
+    end
+    let(:third_message) do
+      {
+        position: '3',
+        timestamp: '2016-05-11T14:19:15.8995792Z',
+        message: 'third message'
+      }
+    end
+    let(:expected_response) do
+      ['05/11/2016  2:18:33 PM: first message',
+      '05/11/2016  2:19:01 PM: second message',
+      '05/11/2016  2:19:15 PM: third message'].join("\n")
+    end
+
+    it 'sorts messages properly' do
+      allow(params).to receive(:message) { [first_message, second_message, third_message].to_json }
+      return_value = subject.execution_logs
+      expect(return_value).to eq(expected_response)
+    end
+
+    context 'ignores invalid' do
+      let(:time_stamp_malformed_message) do
+        {
+          position: '1',
+          timestamp: 'not a valid date',
+          message: 'message'
+        }
+      end
+      let(:position_malformed_message) do
+        {
+          position: nil,
+          timestamp: '2016-05-11T14:19:01.4310159Z',
+          message: 'invalid position message'
+        }
+      end
+      let(:malformed_position_expected_response) do
+        ['05/11/2016  2:19:01 PM: invalid position message',
+        '05/11/2016  2:19:15 PM: third message'].join("\n")
+      end
+
+      it 'position' do
+        allow(params).to receive(:message) { [third_message, position_malformed_message].to_json }
+        return_value = subject.execution_logs
+        expect(return_value).to eq(malformed_position_expected_response)
+      end
+      it 'timestamp' do
+        allow(params).to receive(:message) { [time_stamp_malformed_message].to_json }
+        return_value = subject.execution_logs
+        expect(return_value).to eq 'unknown date: message'
+      end
+    end
+  end
 end
