@@ -329,16 +329,16 @@ describe 'DDTF' do
     end
 
     let(:build) { Factory(:build) }
-    let(:webserver_payload) do
-      { runtimeConfigFields:
-          [{ definition:  'webserver1', value: '1.2.3.4' },
-           { definition: 'do_you', value: 'see_me' }],
-        file: { source: {} }.to_json
-      }
+    let(:webserver_runtime_config) do
+      [{ definition:  'webserver1', value: '1.2.3.4' },
+       { definition: 'do_you', value: 'see_me' }]
     end
 
     it 'omits webserver runtime config fields' do
-      post '/ddtf/tests', webserver_payload.to_json, headers
+      allow_any_instance_of(TsdUtils::EnqueueData).to receive(:runtime_config) do
+        webserver_runtime_config
+      end
+      post '/ddtf/tests', { runtimeConfigFields: webserver_runtime_config }.to_json, headers
       build_id = MultiJson.load(last_response.body)['id'].to_s
       post "/ddtf/tests/#{build_id}/retest", headers
       response = MultiJson.load(last_response.body)

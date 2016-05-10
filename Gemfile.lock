@@ -57,7 +57,7 @@ GIT
 
 GIT
   remote: git@github.com:AVGTechnologies/tsd_utils.git
-  revision: 46a7f9d70616d3671c6344b47b7710e89d8fcb1f
+  revision: ae431c0b399a4f12ed6a93678c831eb5acf6e310
   specs:
     tsd_utils (0.2.0)
       activesupport (= 3.2.22)
@@ -165,7 +165,7 @@ GEM
       activerecord
       railties
     mime-types (1.25.1)
-    multi_json (1.11.3)
+    multi_json (1.12.0)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     mustache (1.0.3)
@@ -297,5 +297,8 @@ DEPENDENCIES
   travis-support!
   tsd_utils!
 
+RUBY VERSION
+   ruby 2.2.2p95
+
 BUNDLED WITH
-   1.11.2
+   1.12.2
