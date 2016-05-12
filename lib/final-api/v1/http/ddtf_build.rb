@@ -1,5 +1,6 @@
 require 'active_support/core_ext/string/inflections'
 require 'test_aggregation'
+require 'time'
 
 module FinalAPI
   module V1
@@ -73,7 +74,7 @@ module FinalAPI
             'checkpoints':    checkpoints,
             'buildSignal':    config[:build_signal] || false,
             'scenarioScript': config[:scenario_script] || false,
-            'executionLogs':  request.try(:message).to_s,
+            'executionLogs':  execution_logs,
             'stashTSD':       config[:stashTsd],
             'runtimeConfig':  ddtf_runtimeConfig,
 
@@ -119,6 +120,21 @@ module FinalAPI
             },
             enqueued: Time.now
           }
+        end
+
+        def execution_logs
+          execution_logs = JSON.parse(build.message || [].to_json)
+          execution_logs_sorted = execution_logs.sort do |x, y|
+            x['position'].to_i <=> y['position'].to_i
+          end
+
+          messages = execution_logs_sorted.map do |message|
+            datetime = DateTime.parse(message['timestamp']) rescue nil
+            atom_format = datetime.nil? ? 'unknown date' : datetime.strftime("%d.%m.%Y %H:%M:%S")
+            "#{atom_format}: #{message['message']}"
+          end
+
+          messages.join("\n")
         end
 
         private
@@ -215,7 +231,6 @@ module FinalAPI
           end
           @ddtf_test_aggregation_result
         end
-
       end
     end
   end
