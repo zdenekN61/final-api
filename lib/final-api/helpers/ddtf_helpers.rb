@@ -1,4 +1,4 @@
-require 'final-api/ext/hash'
+require 'tsd_utils' # Needed for Hash extension with case insensitive support
 
 module FinalAPI
   module Endpoint
