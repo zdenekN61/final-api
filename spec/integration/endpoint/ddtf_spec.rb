@@ -238,7 +238,7 @@ describe 'DDTF' do
         'executionLogs' => '',
         'stashTSD' => nil,
         'runtimeConfig' => [],
-        'parts' => [{ 'name' => nil, 'result' => 'created' }],
+        'parts' => [{ 'name' => nil, 'result' => 'Created' }],
         'tags' => [],
         'result' => 'passed',
         'results' => [{ 'type' => 'created', 'value' => 1.0 }],
