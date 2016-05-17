@@ -77,6 +77,7 @@ module FinalAPI
             'executionLogs':  execution_logs,
             'stashTSD':       config[:stashTsd],
             'runtimeConfig':  ddtf_runtimeConfig,
+            'product': product,
 
             'parts': parts_status,
             'tags': [],
@@ -138,6 +139,11 @@ module FinalAPI
         end
 
         private
+
+        def product
+           tsd = build.config[:tsdContent]
+           tsd[:product] if tsd
+        end
 
         # returns hash of results of all test
         def ddtf_results_distribution
