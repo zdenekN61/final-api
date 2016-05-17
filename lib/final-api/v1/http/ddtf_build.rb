@@ -214,7 +214,9 @@ module FinalAPI
                   all: {
                     result: step_result.results.all? do |(_k, v)|
                       ['passed', 'pending'].include?(v[:result])
-                    end ? 'Passed' : ddtf_v1_overall_status(step_result.results)
+                    end ? 'Passed' : ddtf_v1_overall_status(step_result.results),
+                    message: '',
+                    resultId: "-1"
                   }
                 )
               }
