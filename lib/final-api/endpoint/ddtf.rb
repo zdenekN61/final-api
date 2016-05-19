@@ -68,6 +68,13 @@ module FinalAPI
             FinalAPI::V1::Http::DDTF_Builds.new(builds, {}).data.to_json
           end
 
+          app.get '/ddtf/tests/:id/executionLogs' do
+            build = Build.find(params[:id])
+            
+            content_type :text
+            FinalAPI::V1::Http::DDTF_Build.new(build).execution_logs
+          end
+
           app.get '/ddtf/tests/:id' do
             build = Build.find(params[:id])
             cache_control(:public, max_age: 36000) if build.finished?
