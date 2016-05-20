@@ -61,6 +61,22 @@ describe FinalAPI::V1::Http::DDTF_Build do
     end
   end
 
+  context 'ddtf_v1_overall_states_sort' do
+    it 'returns sorted states(all valid) by value' do
+      states = ['Invalid','Skipped','Passed']
+      sorted = subject.send(:ddtf_v1_overall_states_sort, states)
+      expect(sorted.first).to eq 'Skipped'
+      expect(sorted.last).to eq 'Passed'
+    end
+
+    it 'returns sorted states(+one invalid) by value' do
+      states = ['Invalid','Skipped','Passed', 'Wrong_state']
+      sorted = subject.send(:ddtf_v1_overall_states_sort, states)
+      expect(sorted.first).to eq 'Skipped'
+      expect(sorted.last).to eq 'Wrong_state'
+    end
+  end
+
   context '#state2api_v1status' do
     it 'returns NotStep when bug occured' do
       fake_step[:result] = 'pending'

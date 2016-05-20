@@ -33,9 +33,23 @@ module FinalAPI
           'skipped' => 'Skipped',
            # data status re-write after node properly sends data
           'known_bug' => 'KnownBug',
-          'not_performed' => 'NotPerformed'
+          'not_performed' => 'NotPerformed',
+          'notPerformed' => 'NotPerformed',
+          'notperformed' => 'NotPerformed'
           # 'skipped' => 'Skipped'
         }
+
+        STATE2SORTVALUE_V1STATUS = {
+          'NotPerformed' => 0,
+          'Passed' => 1,
+          'NotSet' => 2,
+          'KnownBug' => 1,
+          'NotTested' => 4,
+          'Invalid' => 5,
+          'Failed' => 6,
+          'Skipped' => 7,
+        }
+        STATE2SORTVALUE_V1STATUS.default(0)
 
         def initialize(build, options = {})
           @build = build
@@ -172,15 +186,16 @@ module FinalAPI
             result << state2api_v1status(v)
           end.uniq
 
-          return 'Skipped' if all_states.include? 'Skipped'
-          return 'Failed' if all_states.include? 'Failed'
-          return 'Invalid' if all_states.include? 'Invalid'
-          return 'NotTested' if all_states.include? 'NotTested'
-          return 'KnownBug' if all_states.include? 'KnownBug'
-          return 'NotSet' if all_states.include? 'NotSet'
-          return 'Passed' if all_states.include? 'Passed'
+          return 'Passed' if all_states.all? { |state| ['Skipped','Passed','NotPerformed','KnownBug'].include?(state) }
+          return ddtf_v1_overall_states_sort(all_states)
+        end
 
-          'NotPerformed'
+        def ddtf_v1_overall_states_sort(states)
+          sorted_states = states.sort do |x, y|
+            STATE2SORTVALUE_V1STATUS[x].to_i <=> STATE2SORTVALUE_V1STATUS[y].to_i
+          end
+
+          return sorted_states.first || 'NotPerformed'
         end
 
         def ddtf_test_aggregation_result
@@ -206,7 +221,7 @@ module FinalAPI
                       ['passed', 'pending'].include?(v[:result])
                     end ? 'Passed' : ddtf_v1_overall_status(step_result.results),
                     message: '',
-                    resultId: "-1"
+                    resultId: nil
                   }
                 )
               }
