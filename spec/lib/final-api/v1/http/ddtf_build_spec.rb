@@ -82,4 +82,71 @@ describe FinalAPI::V1::Http::DDTF_Build do
       end
     end
   end
+
+  context '#execution_logs' do
+    let(:first_message) do
+      ExecutionLog.new ({
+        position: 1,
+        timestamp: '2016-05-11T14:18:33.0714487Z',
+        message: 'first message'
+      })
+    end
+    let(:second_message) do
+      ExecutionLog.new ({
+        position: 2,
+        timestamp: '2016-05-11T14:19:01.4310159Z',
+        message: 'second message'
+      })
+    end
+    let(:third_message) do
+      ExecutionLog.new ({
+        position: 3,
+        timestamp: '2016-05-11T14:19:15.8995792Z',
+        message: 'third message'
+      })
+    end
+    let(:expected_response) do
+      ['11.05.2016 14:18:33: first message',
+      '11.05.2016 14:19:01: second message',
+      '11.05.2016 14:19:15: third message'].join("\n")
+    end
+
+    it 'formats messages properly' do
+      allow(params).to receive_message_chain(:execution_logs, :order) { [first_message, second_message, third_message] }
+      return_value = subject.execution_logs
+      expect(return_value).to eq(expected_response)
+    end
+
+    context 'ignores invalid value and' do
+      let(:time_stamp_malformed_message) do
+        ExecutionLog.new ({
+          position: 1,
+          timestamp: nil,
+          message: 'message'
+        })
+      end
+      let(:position_malformed_message) do
+        ExecutionLog.new ({
+          position: nil,
+          timestamp: '2016-05-11T14:19:01.4310159Z',
+          message: 'invalid position message'
+        })
+      end
+      let(:malformed_position_expected_response) do
+        ['11.05.2016 14:19:01: invalid position message',
+        '11.05.2016 14:19:15: third message'].join("\n")
+      end
+
+      it 'replaces position with zero' do
+        allow(params).to receive_message_chain(:execution_logs, :order) { [position_malformed_message, third_message] }
+        return_value = subject.execution_logs
+        expect(return_value).to eq(malformed_position_expected_response)
+      end
+      it 'replaces timestamp with unknown date' do
+        allow(params).to receive_message_chain(:execution_logs, :order) { [time_stamp_malformed_message] }
+        return_value = subject.execution_logs
+        expect(return_value).to eq 'unknown date: message'
+      end
+    end
+  end
 end

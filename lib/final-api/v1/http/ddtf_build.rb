@@ -73,7 +73,8 @@ module FinalAPI
             'checkpoints':    checkpoints,
             'buildSignal':    config[:build_signal] || false,
             'scenarioScript': config[:scenario_script] || false,
-            'executionLogs':  request.try(:message).to_s,
+            'executionLogs':  execution_logs,
+
             'stashTSD':       config[:stashTsd],
             'runtimeConfig':  ddtf_runtimeConfig,
             'product': product,
@@ -120,6 +121,17 @@ module FinalAPI
             },
             enqueued: Time.now
           }
+        end
+
+        def execution_logs
+          execution_logs_sorted = build.execution_logs.order(:position)
+
+          messages = execution_logs_sorted.map do |message|
+            dateformat = message[:timestamp] ?  message[:timestamp].strftime("%d.%m.%Y %H:%M:%S") : 'unknown date'
+            "#{dateformat}: #{message[:message]}"
+          end
+
+          messages.join("\n")
         end
 
         private
