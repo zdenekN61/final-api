@@ -71,8 +71,7 @@ module FinalAPI
           app.get '/ddtf/tests/:id/executionLogs' do
             build = Build.find(params[:id])
             
-            content_type :text
-            FinalAPI::V1::Http::DDTF_Build.new(build).execution_logs
+            FinalAPI::V1::Http::DDTF_Build.new(build).execution_logs.to_json
           end
 
           app.get '/ddtf/tests/:id' do

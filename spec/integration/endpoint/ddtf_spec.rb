@@ -235,7 +235,7 @@ describe 'DDTF' do
         'checkpoints' => false,
         'buildSignal' => false,
         'scenarioScript' => false,
-        'executionLogs' => '',
+        'executionLogs' => [],
         'stashTSD' => nil,
         'runtimeConfig' => [],
         'parts' => [{ 'name' => nil, 'result' => 'Created' }],

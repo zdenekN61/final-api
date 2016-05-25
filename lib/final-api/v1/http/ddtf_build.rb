@@ -124,14 +124,13 @@ module FinalAPI
         end
 
         def execution_logs
-          execution_logs_sorted = build.execution_logs.order(:position)
-
-          messages = execution_logs_sorted.map do |message|
-            dateformat = message[:timestamp] ?  message[:timestamp].strftime("%d.%m.%Y %H:%M:%S") : 'unknown date'
-            "#{dateformat}: #{message[:message]}"
+          build.execution_logs.each_with_object([]) do |execution_log, result|
+            result << {
+              position: execution_log.position,
+              timestamp: execution_log.timestamp.iso8601,
+              message:  execution_log.message
+            }
           end
-
-          messages.join("\n")
         end
 
         private
