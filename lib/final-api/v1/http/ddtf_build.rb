@@ -62,11 +62,11 @@ module FinalAPI
             'strategy': config[:strategy],
             'email': config[:email],
 
-            'started': build.created_at.to_s,  #TODO remove to_s
-            'enqueued': build.started_at.to_s, #TODO remove to_s
+            'started': build.created_at,
+            'enqueued': build.started_at,
             'startedBy': build.owner.try(:name).to_s,
 
-            'stopped': build.state == 'canceled',
+            'stopped': build.canceled_at,
             'stoppedBy': build.stopped_by.try(:name), # TODO
 
             'isTsd': true,

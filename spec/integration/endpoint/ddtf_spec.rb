@@ -229,7 +229,7 @@ describe 'DDTF' do
         'strategy' => nil,
         'email' => nil,
         'startedBy' => 'Sven Fuchs',
-        'stopped' => false,
+        'stopped' => nil,
         'stoppedBy' => nil,
         'isTsd' => true,
         'checkpoints' => false,
