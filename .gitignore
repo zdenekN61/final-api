@@ -2,6 +2,3 @@
 /config/travis.yml
 /config/database.yml
 /vendor/ddtf
-tags
-/bin/*dll*
-/bin/*exe*
