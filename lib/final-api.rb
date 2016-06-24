@@ -47,8 +47,6 @@ module FinalAPI
       Log::Part.establish_connection 'logs_database'
       StepResult.establish_connection 'test_results_database'
 
-      TestAggregation::BuildResults.sum_results = method(:custom_sum_results)
-
       Sidekiq.configure_server do |config|
         config.redis = Travis.config.redis.merge(namespace: Travis.config.sidekiq.namespace)
         config.server_middleware do |chain|
@@ -87,43 +85,6 @@ module FinalAPI
       ) if config.graphite
 
       TsdUtils.config = FinalAPI.config[:tsd_utils]
-    end
-
-    private
-
-    def custom_sum_results(results)
-      r = results.reject { |_res, count| count <= 0 }.keys.uniq.compact.map(&:to_s)
-
-      # when 'errored' step exists
-      return 'Errored' if r.include?('errored')
-
-      # when 'failed' step exists
-      return 'Failed' if r.include?('failed')
-
-      return 'Failed' if (
-        r.include?('nottested') ||
-        r.include?('notTested') ||
-        r.include?('not_tested')
-      )
-
-      return 'Created' if r.include?('pending') || r.include?('created')
-
-      return 'Passed' if
-        r.include?('passed') &&
-        (
-          r - %w(passed
-                  skipped Skipped
-                  notPerformed NotPerformed
-                  knownBug KnownBug
-                )
-        ).empty?
-
-      # when no results
-      return 'Errored' if r.empty?
-
-      # Code never should goes here
-      FinalAPI.logger.error "Unknown result for: #{r.inspect}"
-      return 'Errored'
     end
   end
 end

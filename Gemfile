@@ -6,7 +6,8 @@ ruby '2.2.2'
 gem 'travis-core',        github: 'AVGTechnologies/travis-core'
 gem 'travis-config',      github: 'final-ci/travis-config'
 gem 'travis-support',     github: 'final-ci/travis-support'
-gem 'test-aggregation',   github: 'final-ci/test-aggregation'
+gem 'test-aggregation',   github: 'AVGTechnologies/test-aggregation'
+
 gem 'travis-sidekiqs',    github: 'final-ci/travis-sidekiqs',   require: nil
 gem 'sidekiq-status',     github: 'utgarda/sidekiq-status',     ref: 'e77d5d'
 gem 'tsd_utils',          git: 'git@github.com:AVGTechnologies/tsd_utils.git'
