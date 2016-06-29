@@ -21,22 +21,6 @@ module FinalAPI
           '' => 'Unknown'
         }
 
-        STATE2API_V1STATUS = {
-          # designed states in final-ci
-          'created' => 'NotSet',
-          'blocked' => 'NotTested',
-          'passed' => 'Passed',
-          'failed' => 'Failed',
-          # fix for Test aggregation step result re-writing
-          'nottested' => 'NotTested',
-          'knownbug' => 'KnownBug',
-          'skipped' => 'Skipped',
-           # data status re-write after node properly sends data
-          'known_bug' => 'KnownBug',
-          'not_performed' => 'NotPerformed'
-          # 'skipped' => 'Skipped'
-        }
-
         def initialize(build, options = {})
           @build = build
           @commit = build.commit
@@ -142,17 +126,14 @@ module FinalAPI
 
         # returns hash of results of all test
         def ddtf_results_distribution
-          res = ddtf_test_aggregation_result.results_hash
-          %w(
-            NotPerformed notPerformed not_performed
-            Skipped skipped
-          ).each do |not_reported_state|
-            res.delete not_reported_state
+          res = ddtf_test_aggregation_result.new_states_results_hash.reject do |(step_result, count)|
+            step_result == 'NotPerformed' || step_result == 'Skipped'
           end
 
-          sum = res.values.inject(0.0) { |s,i| s + i }
-          res.inject([]) do |s, (result, count)|
-            s << { 'type' => result, 'value' => count.to_f / sum }
+          total = res.values.reduce(:+)
+
+          res.each_with_object([]) do |(step_result, count), result|
+            result << { type: step_result, value: count.to_f / total }
           end
         end
 
@@ -168,30 +149,9 @@ module FinalAPI
           build.parts_groups.map do |part_name, jobs|
             {
               name: part_name,
-              result: ddtf_test_aggregation_result.result(part: part_name)
+              result: ddtf_test_aggregation_result.part_result(part_name)
             }
           end
-        end
-
-        def state2api_v1status(step)
-          return 'NotSet' if step[:data]['status'].nil? && step[:result] == 'pending'
-          STATE2API_V1STATUS[step[:data]['status'] || step[:result]]
-        end
-
-        def ddtf_v1_overall_status(results)
-          all_states = results.each_with_object([]) do |(k, v), result|
-            result << state2api_v1status(v)
-          end.uniq
-
-          return 'Skipped' if all_states.include? 'Skipped'
-          return 'Failed' if all_states.include? 'Failed'
-          return 'Invalid' if all_states.include? 'Invalid'
-          return 'NotTested' if all_states.include? 'NotTested'
-          return 'KnownBug' if all_states.include? 'KnownBug'
-          return 'NotSet' if all_states.include? 'NotSet'
-          return 'Passed' if all_states.include? 'Passed'
-
-          'NotPerformed'
         end
 
         def ddtf_test_aggregation_result
@@ -202,29 +162,16 @@ module FinalAPI
 
           @ddtf_test_aggregation_result ||= TestAggregation::BuildResults.new(
             build,
-            ->(job) { job.ddtf_part },
-            ->(job) { job.ddtf_machine },
-            lambda do |step_result|
-              {
-                id: step_result.__id__,
-                description: step_result.name,
-                machines: step_result.results.inject({}) do |s, (k, v)|
-                  s[k] = { result: state2api_v1status(v), message: '', resultId: v[:uuid] }
-                  s
-                end.merge(
-                  all: {
-                    result: step_result.results.all? do |(_k, v)|
-                      ['passed', 'pending'].include?(v[:result])
-                    end ? 'Passed' : ddtf_v1_overall_status(step_result.results),
-                    message: '',
-                    resultId: "-1"
-                  }
-                )
-              }
-            end,
-            ->(step_result) {
-              result = (step_result['data'] and step_result['data']['status']).try(:camelcase)
-              result ||= step_result['result'].downcase
+            ->(job) { job.ddtf_part }, # get part from job config
+            ->(job) { job.ddtf_machine }, # get machine from job config
+            ->(step_result) { # mapping of new state to old state
+              begin
+                step_result[:data]['status'].split('_').collect(&:capitalize).join
+              rescue
+                return 'NotSet' if step_result[:result] == 'created'
+                return 'NotTested' if step_result[:result] == 'blocked'
+                step_result[:result].capitalize
+              end
             }
           )
           build.matrix.each do |job|
@@ -234,7 +181,6 @@ module FinalAPI
           end
           @ddtf_test_aggregation_result
         end
-
       end
     end
   end

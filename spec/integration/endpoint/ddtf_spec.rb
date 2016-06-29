@@ -241,7 +241,7 @@ describe 'DDTF' do
         'parts' => [{ 'name' => nil, 'result' => 'Created' }],
         'tags' => [],
         'result' => 'passed',
-        'results' => [{ 'type' => 'created', 'value' => 1.0 }],
+        'results' => [{ 'type' => 'NotSet', 'value' => 1.0 }],
         'buildId' => build.id
       }
       expect(response).to include(expected_response)

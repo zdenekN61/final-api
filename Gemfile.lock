@@ -1,4 +1,10 @@
 GIT
+  remote: git://github.com/AVGTechnologies/test-aggregation.git
+  revision: a4e7e52c985c1bf38c4280b514a6a2efabb89cd8
+  specs:
+    test-aggregation (0.1.0)
+
+GIT
   remote: git://github.com/AVGTechnologies/travis-core.git
   revision: e561e19d2641ae8afb86504d773a12bf2efcc964
   specs:
@@ -20,12 +26,6 @@ GIT
       simple_states (~> 1.0.0)
       thor (~> 0.14.6)
       virtus (~> 1.0.0)
-
-GIT
-  remote: git://github.com/final-ci/test-aggregation.git
-  revision: 747c48021d26f1203594e19882744b14dced375d
-  specs:
-    test-aggregation (0.1.0)
 
 GIT
   remote: git://github.com/final-ci/travis-config.git
@@ -57,7 +57,7 @@ GIT
 
 GIT
   remote: git@github.com:AVGTechnologies/tsd_utils.git
-  revision: ae431c0b399a4f12ed6a93678c831eb5acf6e310
+  revision: c0b53d4489e50ef501e4ff1ad33f5db9a05f56c1
   specs:
     tsd_utils (0.2.0)
       activesupport (= 3.2.22)
@@ -297,5 +297,8 @@ DEPENDENCIES
   travis-support!
   tsd_utils!
 
+RUBY VERSION
+   ruby 2.2.2p95
+
 BUNDLED WITH
-   1.12.2
+   1.12.4
