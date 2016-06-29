@@ -13,7 +13,7 @@ module FinalAPI
           app.get '/ddtf/announcements' do
             {
               # TODO: needs to be plural 'announcements' - it is array
-              announcement: ['Testing system - get rid of DB4o alfa version']
+              announcement: []
             }.to_json
           end
 
@@ -70,7 +70,7 @@ module FinalAPI
 
           app.get '/ddtf/tests/:id/executionLogs' do
             build = Build.find(params[:id])
-            
+
             FinalAPI::V1::Http::DDTF_Build.new(build).execution_logs.to_json
           end
 
