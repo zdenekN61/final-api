@@ -18,7 +18,7 @@ module FinalAPI
           'failed' => 'Finished',
           'canceled' => 'Stopped',
           'errored' => 'Aborted',
-          '' => 'Unknown'
+          '' => 'Unbeknownst'
         }
 
         def initialize(build, options = {})
@@ -120,8 +120,8 @@ module FinalAPI
         private
 
         def product
-           tsd = build.config[:tsdContent]
-           tsd[:product] if tsd
+          tsd = build.config[:tsdContent]
+          tsd[:product] if tsd
         end
 
         # returns hash of results of all test
