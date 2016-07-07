@@ -152,9 +152,7 @@ module FinalAPI
           end
 
           app.post '/ddtf/builds' do
-            build = DdtfHelpers.create_build(params['repository_id'], params['user_id'], params['config'])
-            halt 404 if build.nil?
-            FinalAPI::Builder.new(build).data.to_json
+            halt 200, { id: 1 }.to_json
           end
 
           app.post '/ddtf/builds/:build_id/jobs' do
