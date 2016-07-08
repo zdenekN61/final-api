@@ -45,28 +45,11 @@ describe 'DDTF' do
       }
     end
 
-    it "create build and return its json" do
+    it "always returns pseudo-build with id: 1" do
       post '/ddtf/builds', payload, headers
       expect(last_response.status).to eq(200)
       response = MultiJson.load(last_response.body)
-      expect(response['config']['language']).to eq('tsd')
-    end
-
-    it "set build to 'started' state" do
-      post '/ddtf/builds', payload, headers
-      expect(last_response.status).to eq(200)
-      response = MultiJson.load(last_response.body)
-      expect(response['state']).to eq('created')
-    end
-
-    it 'returns 404 when user and repository not specified' do
-      post '/ddtf/builds', {}, headers
-      expect(last_response.status).to eq(404)
-    end
-
-    it 'returns 404 when user and repository not exists' do
-      post '/ddtf/builds', { user_id: 100_000, repository_id: 100_000 }, headers
-      expect(last_response.status).to eq(404)
+      expect(response['id']).to eq(1)
     end
   end
 
