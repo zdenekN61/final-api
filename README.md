@@ -1,5 +1,5 @@
 [![Build
-Status](https://travis-ci.org/final-ci/final-api.svg?branch=master)](https://travis-ci.org/final-ci/final-api)
+Status](https://travis-ci.org/AVGTechnologies/final-api.svg?branch=master)](https://travis-ci.org/AVGTechnologies/final-api)
 
 Final-API
 =========
