@@ -22,6 +22,8 @@ production:
     clusters:
       cluster-name-1: cluster-endpoint-1
       cluster-name-2: cluster-endpoint-2
+    executable: TsdValidatorBinaryPath
+    executable_params: '-param -s'
 
 development:
   log_level: :debug
@@ -45,6 +47,8 @@ development:
     clusters:
       cluster-name-1: cluster-endpoint-1
       cluster-name-2: cluster-endpoint-2
+    executable: TsdValidatorBinaryPath
+    executable_params: '-param -s'
 
 test:
   log_level: :warn
@@ -69,6 +73,8 @@ test:
     clusters:
       cluster-name-1: cluster-endpoint-1
       cluster-name-2: cluster-endpoint-2
+    executable: TsdValidatorBinaryPath
+    executable_params: '-param -s'
   test_results_database:
     adapter: postgresql
     database: real_test_results_db_name
