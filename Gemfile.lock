@@ -28,6 +28,17 @@ GIT
       virtus (~> 1.0.0)
 
 GIT
+  remote: git://github.com/AVGTechnologies/tsd_utils.git
+  revision: 145d348dfd4a79e735b6a43a2b7c7dd990cc5023
+  specs:
+    tsd_utils (1.0.0)
+      activesupport (= 3.2.22)
+      gyoku (~> 1.0)
+      httparty (~> 0.13.7)
+      iniparse (~> 1.4.1)
+      mustache (~> 1.0)
+
+GIT
   remote: git://github.com/final-ci/travis-config.git
   revision: e4d915685dbd714166c2052e94565832518b7171
   specs:
@@ -54,17 +65,6 @@ GIT
   specs:
     sidekiq-status (0.5.3)
       sidekiq (>= 2.7)
-
-GIT
-  remote: git@github.com:AVGTechnologies/tsd_utils.git
-  revision: 5d65b31863efe1eeba54cf79fa59680be29f3638
-  specs:
-    tsd_utils (0.2.0)
-      activesupport (= 3.2.22)
-      gyoku (~> 1.0)
-      httparty (~> 0.13.7)
-      iniparse (~> 1.4.1)
-      mustache (~> 1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -296,6 +296,9 @@ DEPENDENCIES
   travis-sidekiqs!
   travis-support!
   tsd_utils!
+
+RUBY VERSION
+   ruby 2.2.2p95
 
 BUNDLED WITH
    1.12.4
