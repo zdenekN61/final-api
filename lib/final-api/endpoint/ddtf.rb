@@ -43,7 +43,6 @@ module FinalAPI
               runtimeConfigFields: tsd.get_ikey('runtimeConfig'),
               tsd: tsd.to_json
             }.to_json
-
           end
 
           # /ddtf/tests?limit=20&offset=0&q=yyyy+id:+my_id
@@ -67,9 +66,7 @@ module FinalAPI
 
           app.get '/ddtf/tests/:id' do
             build = Build.find(params[:id])
-            cache_control(:public, max_age: 36000) if build.finished?
-            last_modified build.updated_at
-            etag sha256.hexdigest(build.to_xml), :weak
+            cache_control(:public, max_age: 36_000) if build.finished?
             FinalAPI::V1::Http::DDTF_Build.new(build, {}).test_data.to_json
           end
 
@@ -77,16 +74,14 @@ module FinalAPI
             build = Build.find(params[:id])
             retest_data = FinalAPI::V1::Http::DDTF_Build.new(build, {}).retest_data
             retest_data['runtimeConfigFields'].reject! do |key, _|
-              key[:definition].downcase.start_with?("webserver")
+              key[:definition].downcase.start_with?('webserver')
             end
             retest_data.to_json
           end
 
           app.get '/ddtf/tests/:id/parts' do
             build = Build.find(params[:id])
-            last_modified build.updated_at
-            etag sha256.hexdigest(build.to_xml), :weak
-            cache_control(:public, max_age: 36000) if build.finished?
+            cache_control(:public, max_age: 36_000) if build.finished?
             FinalAPI::V1::Http::DDTF_Build.new(build, {}).parts_data.to_json
           end
 
@@ -111,7 +106,8 @@ module FinalAPI
                    User.create!(
                     name: user_name,
                     login: user_name,
-                    email: "#{user_name}@#{FinalAPI.config.ddtf.email_domain}")
+                    email: "#{user_name}@#{FinalAPI.config.ddtf.email_domain}"
+                   )
 
             repository = Repository.find_by_name('uploaded-tsd') ||
                          Repository.create!(name: 'uploaded-tsd', owner_name: user.name, owner_id: user.id, owner_type: 'User')
