@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/AVGTechnologies/test-aggregation.git
-  revision: a4e7e52c985c1bf38c4280b514a6a2efabb89cd8
+  revision: 88a1acfa5a5a9e0306992518fb27ec93776d8c6f
   specs:
     test-aggregation (0.1.0)
 
