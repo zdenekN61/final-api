@@ -98,11 +98,11 @@ module FinalAPI
             name: build.name,
             build: build.build_info,
             result: 'NotSet',
-            results:
+            results:[
             {
               Type: 'NotSet',
               Value: 1.0
-            },
+            }],
             enqueued: Time.now
           }
         end
