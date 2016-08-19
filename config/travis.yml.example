@@ -1,4 +1,18 @@
+defaults: &defaults
+  tsd_utils:
+    clusters:
+      cluster-name-1: cluster-endpoint-1
+      cluster-name-2: cluster-endpoint-2
+    executable: TsdValidatorBinaryPath
+    executable_params: '-param -s'
+  api:
+    tests:
+      default_limit: 20
+      max_limit: 200
+      default_offset: 0
+
 production:
+  <<: *defaults
   sentry_dsn: http://example.com/...
 
   database:
@@ -18,14 +32,9 @@ production:
     node_queue: builds.windows.ussnode
     cancel_command_prefix: cmd.
     email_domain: mail.com
-  tsd_utils:
-    clusters:
-      cluster-name-1: cluster-endpoint-1
-      cluster-name-2: cluster-endpoint-2
-    executable: TsdValidatorBinaryPath
-    executable_params: '-param -s'
 
 development:
+  <<: *defaults
   log_level: :debug
   origin_whitelist: '*'
   allowed_origin: '*'
@@ -43,12 +52,6 @@ development:
     command_node_queue: commands.windows.ussnode
     cancel_command_prefix: cmd.
     email_domain: mail.com
-  tsd_utils:
-    clusters:
-      cluster-name-1: cluster-endpoint-1
-      cluster-name-2: cluster-endpoint-2
-    executable: TsdValidatorBinaryPath
-    executable_params: '-param -s'
 
 test:
   log_level: :warn

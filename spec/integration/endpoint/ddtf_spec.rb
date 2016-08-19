@@ -85,6 +85,18 @@ describe 'DDTF' do
   end
 
   context 'GET /ddtf/tests' do
+    let(:fake_config) do
+      double('fakeconf',default_limit: 10, default_offset: 0, max_limit: 1000)
+    end
+
+    let(:fake_config_offset) do
+      double('fakeconf',default_limit: 100, default_offset: 10, max_limit: 1000)
+    end
+
+    let(:fake_config_limit) do
+      double('fakeconf',default_limit: 2, default_offset: 10, max_limit: 10)
+    end
+
     it 'returns last 20 builds by default' do
       1.upto(22) do |idx|
         Factory(:build, name: idx.to_s)
@@ -97,7 +109,48 @@ describe 'DDTF' do
       expect(response.size).to eq 20
     end
 
-    it 'limit results by limit param' do
+    it 'returns last builds, number of elements is configurable via config' do
+      1.upto(22) do |idx|
+        Factory(:build, name: idx.to_s)
+      end
+      allow(FinalAPI.config.api).to receive(:tests).and_return(fake_config)
+
+      get '/ddtf/tests', {}, headers
+      expect(last_response.status).to eq(200)
+      response = MultiJson.load(last_response.body)
+      expect(response.size).to eq 10
+    end
+
+    it 'returns last builds, elements offset is configurable via config' do
+      1.upto(22) do |idx|
+        Factory(:build, name: idx.to_s)
+      end
+
+      allow(FinalAPI.config.api).to receive(:tests).and_return(fake_config_offset)
+
+      get '/ddtf/tests', {}, headers
+      expect(last_response.status).to eq(200)
+      response = MultiJson.load(last_response.body)
+      expect(response.size).to eq 12
+      names = response.map {|r| r["name"]}
+      expect(names).to include(*(1..12).to_a.map(&:to_s))
+    end
+
+    it 'returns last builds with statuscode 200 in case the output is incomplete '\
+       'if limit in request is set unproperly' do
+      1.upto(22) do |idx|
+        Factory(:build, name: idx.to_s)
+      end
+
+      allow(FinalAPI.config.api).to receive(:tests).and_return(fake_config_limit)
+
+      get '/ddtf/tests', { limit: 20000 }, headers
+      expect(last_response.status).to eq(200)
+      response = MultiJson.load(last_response.body)
+      expect(response.size).to eq 10
+    end
+
+    it 'limits results by limit param' do
       1.upto(3) do |idx|
         Factory(:build, config: { name: idx.to_s })
       end
@@ -107,7 +160,7 @@ describe 'DDTF' do
       expect(response.size).to eq 2
     end
 
-    it 'paginate by limit and offset params' do
+    it 'paginates by limit and offset params' do
       1.upto(5) do |idx|
         Factory(:build, name: idx.to_s)
       end

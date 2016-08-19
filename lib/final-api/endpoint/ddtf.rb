@@ -48,8 +48,10 @@ module FinalAPI
           # /ddtf/tests?limit=20&offset=0&q=yyyy+id:+my_id
           app.get '/ddtf/tests' do
             begin
-              limit = params[:limit] ? params[:limit].to_i : 20
-              offset = params[:offset] ? params[:offset].to_i : 0
+              limit = (params[:limit] || FinalAPI.config.api.tests.default_limit).to_i
+              offset = (params[:offset] || FinalAPI.config.api.tests.default_offset).to_i
+
+              limit = [FinalAPI.config.api.tests.max_limit.to_i, limit].min
               builds = Build.search(params[:q], limit, offset)
 
               FinalAPI::V1::Http::DDTF_Builds.new(builds, {}).data.to_json
