@@ -487,7 +487,7 @@ describe 'DDTF' do
       it 'returns expected data' do
         post '/ddtf/tests', post_payload, headers
         expect(JSON.parse(last_response.body)).to include(
-          'id', 'name', 'build', 'result', 'results', 'enqueued')
+          'id', 'name', 'build', 'result', 'results', 'started')
       end
 
       it 'adds build id' do

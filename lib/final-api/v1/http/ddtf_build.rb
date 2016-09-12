@@ -103,7 +103,7 @@ module FinalAPI
               Type: 'NotSet',
               Value: 1.0
             },
-            enqueued: Time.now
+            started: Time.now
           }
         end
 
