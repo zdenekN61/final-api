@@ -142,10 +142,12 @@ module FinalAPI
           end
 
           app.put '/ddtf/tests/:id/stop' do
-            service = Travis.service(:cancel_ddtf_build, current_user, params.merge(source: 'api'))
+            user_name = env['HTTP_NAME']
+            user_name = current_user if user_name.blank?
+            service = Travis.service(:cancel_ddtf_build, user_name, params.merge(source: 'api'))
             halt(403, { messages: service.messages }.to_json) unless service.authorized?
             halt(204, { messages: service.messages }.to_json) unless service.build
-            Travis.run_service(:cancel_ddtf_build, current_user, id: params['id'])
+            Travis.run_service(:cancel_ddtf_build, user_name, id: params['id'])
             halt 200
           end
 
